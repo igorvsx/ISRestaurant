@@ -129,6 +129,9 @@
   <ItemGroup>
     <ClCompile Include="ISRestaurant.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ISRestaurant.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
