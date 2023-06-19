@@ -195,7 +195,7 @@ int main()
     bool loggedIn = false;
 
     while (!loggedIn) {
-        std::cout << "1. Регистрация\n2. Авторизация\n3. Выход\nВыберите действие: ";
+        std::cout << "1. Регистрация\n2. Авторизация\n3. Войти как гость\n4. Выход\nВыберите действие: ";
         std::cin >> choice;
 
         // Проверка на некорректный ввод
@@ -215,6 +215,10 @@ int main()
             loggedIn = loginUser();
             break;
         case 3:
+            loggedIn = true;
+            cout << "Вход выполнен как гость" << endl;
+            break;
+        case 4:
             return 0;
         default:
             std::cout << "Неправильный выбор. Попробуйте еще раз." << std::endl;
