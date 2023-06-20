@@ -6,10 +6,8 @@
 #include <cstdlib>
 #define NOMINMAX
 #include <windows.h>
-#include <nlohmann/json.hpp>
 
 using namespace std;
-using json = nlohmann::json;
 
 #pragma region Классы
 // Класс "Гость"
@@ -452,7 +450,7 @@ void registerUser() {
     file << firstName << endl;
     file << lastName << endl;
     file << patronymic << endl;
-    
+
 
     cout << "Регистрация успешно завершена." << endl;
 }
