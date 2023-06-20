@@ -68,6 +68,20 @@ public:
 };
 #pragma endregion Классы
 
+
+#pragma region Функции работы с меню 
+void Menu::addDish() {
+
+}
+
+void Menu::removeDish() {
+
+}
+
+void Menu::editDish() {
+
+}
+#pragma endregion
 #pragma region Методы
 
 void clearConsole() {
@@ -75,8 +89,45 @@ void clearConsole() {
 }
 
 void User::editMenu() {
-    cout << "Меню редактирования";
+    int choice;
+
+    while (true) {
+        cout << "Редактирование меню\n";
+        cout << "1. Добавить блюдо\n";
+        cout << "2. Удалить блюдо\n";
+        cout << "3. Редактировать блюдо\n";
+        cout << "4. Вернуться в предыдущее меню\n";
+        cout << "Выберите действие: ";
+        cin >> choice;
+
+        if (cin.fail()) {
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
+        }
+
+        Menu menu;
+
+        switch (choice) {
+        case 1:
+            menu.addDish();
+            break;
+        case 2:
+            menu.removeDish();
+            break;
+        case 3:
+            menu.editDish();
+            break;
+        case 4:
+            return;  // Выход из функции editMenu() и возврат к предыдущему меню
+        default:
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            break;
+        }
+    }
 }
+
 
 void User::editProductList() {
     cout << "Меню редактирования";
@@ -137,7 +188,6 @@ void User::adminMenu() {
         }
     }
 }
-
 
 void User::employeeMenu() {
     cout << "Меню сотрудника" << endl;
@@ -278,7 +328,8 @@ bool loginUser(User& user) {
             user.patronymic = line;
             user.setUserDetails(role, "", "", "", "", ""); // Инициализация объекта user
             if (pass == password) {
-                cout << "Авторизация успешна." << endl;
+                clearConsole();
+                cout << "Авторизация успешна. \n" << endl;
                 return true;
             }
             else {
@@ -338,6 +389,8 @@ int main()
 
     if (loggedIn && user.role == "Администратор") {
         user.adminMenu();
+        clearConsole();
+        main();
     }
 
     // Здесь может быть код основной логики программы после успешной авторизации
