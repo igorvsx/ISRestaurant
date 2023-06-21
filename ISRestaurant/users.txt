@@ -1,6 +1,12 @@
 admin
 admin
 Администратор
- ў
-¦Ґбвм
-ўл 
+imya
+familua
+otchestvo
+sklad
+sklad
+Складской
+imya
+imya
+otchetstov

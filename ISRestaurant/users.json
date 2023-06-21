@@ -1,0 +1,20 @@
+{
+    "users": [
+        {
+            "firstName": "dsf",
+            "lastName": "ds",
+            "password": "admin",
+            "patronymic": "dsf",
+            "role": "Admin",
+            "username": "admin"
+        },
+        {
+            "firstName": "dsf",
+            "lastName": "dsf",
+            "password": "sklad",
+            "patronymic": "sdf",
+            "role": "Skladskoy",
+            "username": "sklad"
+        }
+    ]
+}

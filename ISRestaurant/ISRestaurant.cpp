@@ -4,8 +4,12 @@
 #include <string>
 #include <limits>
 #include <cstdlib>
+#include <iomanip>
 #define NOMINMAX
 #include <windows.h>
+#include "single_include/nlohmann/json.hpp"
+
+using json = nlohmann::json;
 
 using namespace std;
 
@@ -69,15 +73,17 @@ public:
     string patronymic;
     string username;
     string password;
-    void menu();
     // Функции меню для разных ролей
+    void addProduct();
+    void editProduct();
+    void removeProduct();
     void guestMenu();
+    void skladMenu();
     void adminMenu();
     void employeeMenu();
     void editMenu();
     void editProductList();
     void editEmployees();
-    void setUserDetails(const string& role, const string& firstName, const string& lastName, const string& patronymic, const string& username, const string& password);
 };
 #pragma endregion Классы
 
@@ -291,20 +297,287 @@ void User::editMenu() {
 
 
 void User::editProductList() {
-    cout << "Меню редактирования";
+    clearConsole();
+    int choice;
+
+    while (true) {
+        cout << "1. Добавить продукт\n";
+        cout << "2. Изменить продукт\n";
+        cout << "3. Удалить продукт\n";
+        cout << "4. Вернуться в предыдущее меню\n";
+        cout << "Выберите действие: ";
+        cin >> choice;
+
+        if (cin.fail()) {
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
+        }
+
+        Menu menu;
+
+        switch (choice) {
+        case 1:
+            addProduct();
+            break;
+        case 2:
+            editProduct();
+            break;
+        case 3:
+            removeProduct();
+            break;
+        case 4:
+            return;
+        default:
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            break;
+        }
+    }
 }
+
+void User::addProduct() {
+    clearConsole();
+    Product product;
+
+    cout << "Введите ID продукта: ";
+    cin >> product.id;
+
+    cout << "Введите наименование продукта: ";
+    cin.ignore();
+    getline(cin, product.name);
+
+    cout << "Введите цену продукта: ";
+    cin >> product.price;
+
+    vector<Product> products;
+
+    // Добавляем продукт в список продуктов
+    // Например, если список продуктов хранится в векторе products
+    products.push_back(product);
+
+    // Сохранение данных в файл
+    ofstream outFile("products.txt", ios::app); // Открываем файл для добавления данных в конец
+    if (outFile.is_open()) {
+        outFile << product.id << endl;
+        outFile << product.name << endl;
+        outFile << product.price << endl;
+        outFile << "===" << endl; // Разделитель между продуктами
+        outFile.close();
+        cout << "Данные успешно сохранены в файл." << endl;
+    }
+    else {
+        cout << "Ошибка открытия файла для сохранения данных." << endl;
+    }
+
+    Sleep(1500);
+    clearConsole();
+}
+
+
+void User::editProduct() {
+    clearConsole();
+
+    // Чтение данных из файла
+    ifstream inFile("products.txt");
+    if (!inFile.is_open()) {
+        cout << "Ошибка открытия файла для чтения данных." << endl;
+        return;
+    }
+
+    // Вектор для хранения продуктов из файла
+    vector<Product> fileProducts;
+
+    string line;
+    Product product;
+
+    // Читаем данные из файла и сохраняем продукты в векторе
+    while (getline(inFile, line)) {
+        if (line == "===") {
+            fileProducts.push_back(product);
+            product = Product(); // Сбрасываем product для следующего продукта
+        }
+        else if (!line.empty()) {
+            switch (fileProducts.size() % 3) {
+            case 0:
+                try {
+                    product.id = stoi(line);
+                }
+                catch (const std::invalid_argument&) {
+                    cout << "Ошибка чтения ID продукта из файла." << endl;
+                    inFile.close();
+                    return;
+                }
+                break;
+            case 1:
+                product.name = line;
+                break;
+            case 2:
+                try {
+                    product.price = stod(line);
+                }
+                catch (const std::invalid_argument&) {
+                    cout << "Ошибка чтения цены продукта из файла." << endl;
+                    inFile.close();
+                    return;
+                }
+                break;
+            }
+        }
+    }
+
+    inFile.close();
+
+    // Выводим список продуктов из файла
+    cout << "Список продуктов:" << endl;
+    for (const auto& prod : fileProducts) {
+        cout << "ID: " << prod.id << endl;
+        cout << "Наименование: " << prod.name << endl;
+        cout << "Цена: " << prod.price << endl;
+        cout << "=====================" << endl;
+    }
+
+    // Запрашиваем ID продукта, который нужно изменить
+    int id;
+    cout << "Введите ID продукта, который нужно изменить: ";
+    cin >> id;
+
+    // Ищем продукт с указанным ID в векторе продуктов
+    auto it = find_if(fileProducts.begin(), fileProducts.end(), [id](const Product& p) {
+        return p.id == id;
+        });
+
+    if (it != fileProducts.end()) {
+        // Найден продукт, запрашиваем новые данные
+        cout << "Введите новое наименование продукта: ";
+        cin.ignore();
+        getline(cin, it->name);
+
+        cout << "Введите новую цену продукта: ";
+        cin >> it->price;
+
+        // Сохраняем изменения в файле
+        ofstream outFile("products.txt");
+        if (outFile.is_open()) {
+            for (const auto& prod : fileProducts) {
+                outFile << prod.id << endl;
+                outFile << prod.name << endl;
+                outFile << prod.price << endl;
+                outFile << "===" << endl; // Разделитель между продуктами
+            }
+            outFile.close();
+            cout << "Данные успешно сохранены в файл." << endl;
+        }
+        else {
+            cout << "Ошибка открытия файла для сохранения данных." << endl;
+        }
+    }
+    else {
+        cout << "Продукт с указанным ID не найден." << endl;
+    }
+}
+
+void User::removeProduct() {
+    clearConsole();
+
+    // Чтение данных из файла
+    ifstream inFile("products.txt");
+    if (!inFile.is_open()) {
+        cout << "Ошибка открытия файла для чтения данных." << endl;
+        return;
+    }
+
+    // Вектор для хранения продуктов из файла
+    vector<Product> fileProducts;
+
+    string line;
+    Product product;
+
+    // Читаем данные из файла и сохраняем продукты в векторе
+    while (getline(inFile, line)) {
+        if (line == "===") {
+            fileProducts.push_back(product);
+            product = Product(); // Сбрасываем product для следующего продукта
+        }
+        else if (!line.empty()) {
+            switch (fileProducts.size() % 3) {
+            case 0:
+                try {
+                    product.id = stoi(line);
+                }
+                catch (const std::invalid_argument&) {
+                    cout << "Ошибка чтения ID продукта из файла." << endl;
+                    inFile.close();
+                    return;
+                }
+                break;
+            case 1:
+                product.name = line;
+                break;
+            case 2:
+                try {
+                    product.price = stod(line);
+                }
+                catch (const std::invalid_argument&) {
+                    cout << "Ошибка чтения цены продукта из файла." << endl;
+                    inFile.close();
+                    return;
+                }
+                break;
+            }
+        }
+    }
+
+    inFile.close();
+
+    // Выводим список продуктов из файла
+    cout << "Список продуктов:" << endl;
+    for (const auto& prod : fileProducts) {
+        cout << "ID: " << prod.id << endl;
+        cout << "Наименование: " << prod.name << endl;
+        cout << "Цена: " << prod.price << endl;
+        cout << "=====================" << endl;
+    }
+
+    // Запрашиваем ID продукта, который нужно удалить
+    int id;
+    cout << "Введите ID продукта, который нужно удалить: ";
+    cin >> id;
+
+    // Ищем продукт с указанным ID в векторе продуктов
+    auto it = find_if(fileProducts.begin(), fileProducts.end(), [id](const Product& p) {
+        return p.id == id;
+        });
+
+    if (it != fileProducts.end()) {
+        // Найден продукт, удаляем его из вектора
+        fileProducts.erase(it);
+
+        // Сохраняем изменения в файле
+        ofstream outFile("products.txt");
+        if (outFile.is_open()) {
+            for (const auto& prod : fileProducts) {
+                outFile << prod.id << endl;
+                outFile << prod.name << endl;
+                outFile << prod.price << endl;
+                outFile << "===" << endl; // Разделитель между продуктами
+            }
+            outFile.close();
+            cout << "Продукт успешно удален." << endl;
+        }
+        else {
+            cout << "Ошибка открытия файла для сохранения данных." << endl;
+        }
+    }
+    else {
+        cout << "Продукт с указанным ID не найден." << endl;
+    }
+}
+
+
 
 void User::editEmployees() {
     cout << "Меню редактирования";
-}
-
-void User::setUserDetails(const string& role, const string& firstName, const string& lastName, const string& patronymic, const string& username, const string& password) {
-    this->role = role;
-    this->firstName = firstName;
-    this->lastName = lastName;
-    this->patronymic = patronymic;
-    this->username = username;
-    this->password = password;
 }
 
 void User::guestMenu() {
@@ -351,39 +624,107 @@ void User::adminMenu() {
 }
 
 void User::employeeMenu() {
-    cout << "Меню сотрудника" << endl;
-    // Добавьте функциональность для меню сотрудника
+    cout << "Меню";
 }
 
-void User::menu() {
-    if (role == "Гость") {
-        guestMenu();
-    }
-    else if (role == "Администратор") {
-        adminMenu();
-    }
-    else {
-        employeeMenu();
+void User::skladMenu() {
+    clearConsole();
+    int choice;
+
+    while (true) {
+        cout << "1. Создать заявку\n";
+        cout << "1. Посмотреть склад\n";
+        cout << "Выберите действие: ";
+        cin >> choice;
+
+        if (cin.fail()) {
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            cin.clear();
+            clearConsole();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
+        }
+
+        Menu menu;
+
+        switch (choice) {
+        case 1:
+            menu.addDish();
+            editMenu();
+            break;
+        case 2:
+            menu.removeDish();
+            return;
+            break;
+        case 3:
+            menu.editDish();
+            return;
+            break;
+        case 4:
+            return;  // Выход из функции editMenu() и возврат к предыдущему меню
+        default:
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            clearConsole();
+            break;
+        }
     }
 }
 #pragma endregion Методы
 
+#pragma region Чтение
+json readJsonData(const std::string& filename) {
+    std::ifstream inputFile(filename);
+    json jsonData;
+    if (inputFile.is_open()) {
+        inputFile >> jsonData;
+        inputFile.close();
+    }
+    return jsonData;
+}
+#pragma endregion Чтение
+
+#pragma region Запись
+// Запись данных в файл JSON
+void writeJsonData(const std::string& filename, const json& jsonData) {
+    try {
+        std::ofstream file(filename);
+        file << std::setw(4) << jsonData << std::endl;
+        file.close();
+        std::cout << "Данные успешно сохранены в файл: " << filename << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cout << "Ошибка при записи данных в файл: " << e.what() << std::endl;
+    }
+}
+#pragma endregion Запись
+
 #pragma region Регистрация
 // Функция для проверки существования пользователя в файле
-bool userExists(const string& username) {
-    ifstream file("users.txt");
-    string line;
-    while (getline(file, line)) {
-        if (line == username) {
-            return true;
+bool userExists(const std::string& username) {
+    std::ifstream file("users.json");
+    if (!file.is_open()) {
+        return false;  // Файл не существует, пользователь не найден
+    }
+
+    json data;
+    file >> data;
+
+    if (data.contains("users")) {
+        const json& usersArray = data["users"];
+        for (const auto& user : usersArray) {
+            if (user["username"] == username) {
+                return true;  // Пользователь с таким именем уже существует
+            }
         }
     }
-    return false;
+
+    return false;  // Пользователь не найден
 }
+
 
 // Функция для регистрации нового пользователя
 void registerUser() {
-    string role, firstName, lastName, patronymic, username, password;
+    std::string role, firstName, lastName, patronymic, username, password;
 
     cout << "\nВыберите роль пользователя:" << endl;
     cout << "1. Администратор" << endl;
@@ -398,22 +739,22 @@ void registerUser() {
 
     switch (roleChoice) {
     case 1:
-        role = "Администратор";
+        role = "Admin";
         break;
     case 2:
-        role = "Складской";
+        role = "Skladskoy";
         break;
     case 3:
-        role = "Поставщик";
+        role = "Supplier";
         break;
     case 4:
-        role = "Бухгалтер";
+        role = "Bughalter";
         break;
     case 5:
-        role = "Повар";
+        role = "Chef";
         break;
     case 6:
-        role = "Официант";
+        role = "Officiant";
         break;
     default:
         cout << "Неправильный выбор роли." << endl;
@@ -422,83 +763,86 @@ void registerUser() {
 
     cout << "Введите Фамилию: ";
     cin >> lastName;
+
     cout << "Введите Имя: ";
     cin >> firstName;
+
     cout << "Введите Отчество: ";
     cin >> patronymic;
 
-    cout << "Введите имя пользователя: ";
-    cin >> username;
+    // Проверка на уникальность имени пользователя
+    bool isUnique = false;
+    while (!isUnique) {
+        std::cout << "Логин: ";
+        std::cin >> username;
 
-    if (userExists(username)) {
-        cout << "Пользователь с таким именем уже существует." << endl;
-        return;
+        // Загружаем данные из файла
+        json jsonData = readJsonData("users.json");
+
+        // Проверяем, существует ли пользователь с таким же именем пользователя
+        bool exists = false;
+        for (const auto& user : jsonData["users"]) {
+            if (user["username"] == username) {
+                exists = true;
+                break;
+            }
+        }
+
+        if (!exists) {
+            isUnique = true;
+        }
+        else {
+            std::cout << "Пользователь с таким именем пользователя уже существует. Введите другое имя пользователя.\n";
+        }
     }
 
-    cout << "Введите пароль: ";
-    cin >> password;
+    std::cout << "Пароль: ";
+    std::cin >> password;
 
-    // Валидация длины пароля (минимум 6 символов)
-    /*if (password.length() < 6) {
-        cout << "Пароль должен содержать минимум 6 символов." << endl;
-    }*/
+    // Создаем объект JSON для нового пользователя
+    json user;
+    user["role"] = role;
+    user["firstName"] = firstName;
+    user["lastName"] = lastName;
+    user["patronymic"] = patronymic;
+    user["username"] = username;
+    user["password"] = password;
 
-    ofstream file("users.txt", ios::app);
-    file << username << endl;
-    file << password << endl;
-    file << role << endl;
-    file << firstName << endl;
-    file << lastName << endl;
-    file << patronymic << endl;
+    // Загружаем существующие данные из файла
+    json jsonData = readJsonData("users.json");
 
+    // Добавляем нового пользователя в данные
+    jsonData["users"].push_back(user);
 
-    cout << "Регистрация успешно завершена." << endl;
+    // Сохраняем обновленные данные в файл
+    writeJsonData("users.json", jsonData);
+
+    std::cout << "Пользователь успешно зарегистрирован!\n";
 }
 
 // Функция для авторизации пользователя
-// Функция для авторизации пользователя
-bool loginUser(User& user) {
-    string username, password;
+bool loginUser(User& user, std::string& role) {
+    std::string username, password;
 
-    cout << "Введите имя пользователя: ";
-    cin >> username;
+    std::cout << "Логин: ";
+    std::cin >> username;
+    std::cout << "Пароль: ";
+    std::cin >> password;
 
-    if (!userExists(username)) {
-        cout << "Пользователь с таким именем не найден." << endl;
-        return false;
-    }
+    // Загружаем данные из файла
+    json jsonData = readJsonData("users.json");
 
-    cout << "Введите пароль: ";
-    cin >> password;
-
-    ifstream file("users.txt");
-    string line;
-    string role;
-    string pass;
-    while (getline(file, line)) {
-        if (line == username) {
-            getline(file, pass); // Read password
-            user.password = pass;
-            getline(file, role); // Read role
-            user.role = role;
-            getline(file, line); // Read firstname
-            user.firstName = line;
-            getline(file, line); // Read lastname
-            user.lastName = line;
-            getline(file, line); // Read patronymic
-            user.patronymic = line;
-            user.setUserDetails(role, "", "", "", "", ""); // Инициализация объекта user
-            if (pass == password) {
-                clearConsole();
-                cout << "Авторизация успешна. \n" << endl;
-                return true;
-            }
-            else {
-                cout << "Неправильный пароль." << endl;
-                return false;
-            }
+    // Поиск пользователя с указанным логином и паролем
+    for (const auto& user : jsonData["users"]) {
+        if (user["username"] == username && user["password"] == password) {
+            role = user["role"];
+            clearConsole();
+            std::cout << "Пользователь успешно аутентифицирован!" << endl;
+            return true;
         }
     }
+
+    std::cout << "Неверный логин или пароль. Попробуйте еще раз.\n";
     return false;
 }
 
@@ -512,6 +856,7 @@ int main()
     int choice;
     bool loggedIn = false;
     User user;
+    std::string role;
 
     while (!loggedIn) {
         std::cout << "1. Регистрация\n2. Авторизация\n3. Войти как гость\n4. Выход\nВыберите действие: ";
@@ -519,7 +864,7 @@ int main()
 
         // Проверка на некорректный ввод
         if (std::cin.fail()) {
-            std::cout << "Неправильный выбор. Попробуйте еще раз." << std::endl << endl;
+            std::cout << "Неправильный выбор. Попробуйте еще раз." << std::endl << std::endl;
             std::cin.clear();
             Sleep(1500);
             clearConsole();
@@ -532,10 +877,11 @@ int main()
             registerUser();
             break;
         case 2:
-            loggedIn = loginUser(user);
+            loggedIn = loginUser(user, role);
             break;
         case 3:
             loggedIn = true;
+            role = "Гость";
             cout << "Вход выполнен как гость" << endl;
             break;
         case 4:
@@ -546,16 +892,30 @@ int main()
             clearConsole();
             break;
         }
+
+        if (loggedIn) {
+            if (role == "Admin") {
+                bool continueAsAdmin = true;
+                while (continueAsAdmin) {
+                    user.adminMenu();
+                    clearConsole();
+                    continueAsAdmin = false;
+                }
+            }
+            else if (role == "Skladskoy") {
+                user.skladMenu();
+                clearConsole();
+            }
+            else {
+                break; // Выход из цикла, если роль неизвестна или не имеет меню
+            }
+        }
     }
 
-    if (loggedIn && user.role == "Администратор") {
-        user.adminMenu();
-        clearConsole();
-        main();
-    }
-
-    // Здесь может быть код основной логики программы после успешной авторизации
+    // Если пользователь вышел из цикла авторизации, открываем снова меню авторизации
+    main();
 
     return 0;
 }
+
 #pragma endregion main
