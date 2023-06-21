@@ -129,10 +129,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Guest.cpp" />
     <ClCompile Include="ISRestaurant.cpp" />
+    <ClCompile Include="JsonHelper.cpp" />
+    <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="Order.cpp" />
+    <ClCompile Include="Product.cpp" />
+    <ClCompile Include="User.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Guest.h" />
     <ClInclude Include="ISRestaurant.h" />
+    <ClInclude Include="JsonHelper.h" />
+    <ClInclude Include="Menu.h" />
+    <ClInclude Include="Order.h" />
+    <ClInclude Include="Product.h" />
+    <ClInclude Include="User.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
