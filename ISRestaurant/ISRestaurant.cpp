@@ -93,6 +93,32 @@ void clearConsole() {
 }
 #pragma endregion Очистка консоли
 
+#pragma region Чтение
+json readJsonData(const std::string& filename) {
+    std::ifstream inputFile(filename);
+    json jsonData;
+    if (inputFile.is_open()) {
+        inputFile >> jsonData;
+        inputFile.close();
+    }
+    return jsonData;
+}
+#pragma endregion Чтение
+
+#pragma region Запись
+// Запись данных в файл JSON
+void writeJsonData(const std::string& filename, const json& jsonData) {
+    try {
+        std::ofstream file(filename);
+        file << std::setw(4) << jsonData << std::endl;
+        file.close();
+        std::cout << "Данные успешно сохранены в файл: " << filename << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cout << "Ошибка при записи данных в файл: " << e.what() << std::endl;
+    }
+}
+#pragma endregion Запись
 
 #pragma region Функции работы с меню 
 void Menu::addDish() {
@@ -576,9 +602,82 @@ void User::removeProduct() {
 
 
 
-void User::editEmployees() {
-    cout << "Меню редактирования";
+void User::editEmployees()
+{
+    clearConsole();
+    // Загружаем данные из файла
+    json jsonData = readJsonData("users.json");
+
+    // Выводим список сотрудников
+    std::cout << "Список сотрудников:\n";
+    for (const auto& user : jsonData["users"]) {
+        std::cout << "Имя: " << user["firstName"] << std::endl;
+        std::cout << "Фамилия: " << user["lastName"] << std::endl;
+        std::cout << "Отчество: " << user["patronymic"] << std::endl;
+        std::cout << "Логин: " << user["username"] << std::endl;
+        std::cout << "Пароль: " << user["password"] << std::endl;
+        std::cout << "Роль: " << user["role"] << std::endl;
+        std::cout << "-----------------------\n";
+    }
+
+    // Получаем логин сотрудника, которого нужно редактировать
+    std::string editUsername;
+    std::cout << "Введите логин сотрудника для редактирования: ";
+    std::cin.ignore();
+    std::getline(std::cin, editUsername);
+
+    // Поиск сотрудника с указанным логином
+    bool found = false;
+    for (auto& user : jsonData["users"]) {
+        if (user["username"] == editUsername) {
+            found = true;
+            std::string firstName, lastName, patronymic, newUsername, newPassword, newRole;
+
+            std::cout << "Редактирование данных сотрудника:\n";
+
+            // Редактирование ФИО
+            std::cout << "Новое имя: ";
+            std::getline(std::cin, firstName);
+            user["firstName"] = firstName;
+
+            std::cout << "Новая фамилия: ";
+            std::getline(std::cin, lastName);
+            user["lastName"] = lastName;
+
+            std::cout << "Новое отчество: ";
+            std::getline(std::cin, patronymic);
+            user["patronymic"] = patronymic;
+
+            // Редактирование логина
+            std::cout << "Новый логин: ";
+            std::getline(std::cin, newUsername);
+            user["username"] = newUsername;
+
+            // Редактирование пароля
+            std::cout << "Новый пароль: ";
+            std::getline(std::cin, newPassword);
+            user["password"] = newPassword;
+
+            // Редактирование роли
+            std::cout << "Новая роль: ";
+            std::getline(std::cin, newRole);
+            user["role"] = newRole;
+
+            std::cout << "Данные сотрудника успешно обновлены.\n";
+            break;
+        }
+    }
+
+    // Сохраняем обновленные данные в файл
+    if (found) {
+        writeJsonData("users.json", jsonData);
+    }
+    else {
+        std::cout << "Сотрудник с указанным логином не найден.\n";
+    }
 }
+
+
 
 void User::guestMenu() {
     cout << "Меню гостя" << endl;
@@ -671,32 +770,7 @@ void User::skladMenu() {
 }
 #pragma endregion Методы
 
-#pragma region Чтение
-json readJsonData(const std::string& filename) {
-    std::ifstream inputFile(filename);
-    json jsonData;
-    if (inputFile.is_open()) {
-        inputFile >> jsonData;
-        inputFile.close();
-    }
-    return jsonData;
-}
-#pragma endregion Чтение
 
-#pragma region Запись
-// Запись данных в файл JSON
-void writeJsonData(const std::string& filename, const json& jsonData) {
-    try {
-        std::ofstream file(filename);
-        file << std::setw(4) << jsonData << std::endl;
-        file.close();
-        std::cout << "Данные успешно сохранены в файл: " << filename << std::endl;
-    }
-    catch (const std::exception& e) {
-        std::cout << "Ошибка при записи данных в файл: " << e.what() << std::endl;
-    }
-}
-#pragma endregion Запись
 
 #pragma region Регистрация
 // Функция для проверки существования пользователя в файле

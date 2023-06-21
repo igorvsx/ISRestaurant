@@ -9,10 +9,10 @@
             "username": "admin"
         },
         {
-            "firstName": "dsf",
-            "lastName": "dsf",
+            "firstName": "D",
+            "lastName": "D",
             "password": "sklad",
-            "patronymic": "sdf",
+            "patronymic": "D",
             "role": "Skladskoy",
             "username": "sklad"
         }
