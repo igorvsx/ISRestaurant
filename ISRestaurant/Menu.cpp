@@ -55,6 +55,58 @@ void Menu::editMenu() {
     }
 }
 
+//json Menu::to_json() const
+//{
+//    nlohmann::json jsonObj;
+//    jsonObj["name"] = name;
+//    jsonObj["description"] = description;
+//    jsonObj["ingredients"] = nlohmann::json::array();  // Create an empty JSON array
+//
+//    // Convert ingredients vector to JSON array
+//    for (const auto& ingredient : ingredients) {
+//        jsonObj["ingredients"].push_back(ingredient.to_json());
+//    }
+//
+//    jsonObj["price"] = price;
+//    jsonObj["preparationTime"] = preparationTime;
+//
+//    return jsonObj;
+//}
+//
+//void MenuItem::addMenuItem() {
+//    json menuData;
+//    std::ifstream file("../menu.json");
+//    if (file.is_open()) {
+//        try
+//        {
+//            file >> menuData;
+//            file.close();
+//        }
+//        catch (const std::exception&)
+//        {
+//
+//        }
+//
+//    }
+//    else {
+//        std::cerr << "Ошибка при окрытии файла\n";
+//        return;
+//    }
+//
+//    json menuItemJson = to_json();
+//
+//    // Добавление нового продукта в массив
+//    menuData["menu"].push_back(menuItemJson);
+//
+//    // Запись обновленных данных в файл
+//    std::ofstream outFile("../menu.json");
+//    outFile << std::setw(4) << menuData << std::endl;
+//    outFile.close();
+//
+//    std::cout << "Продукт успешно добавлен.\n";
+//}
+
+
 void Menu::addDish() {
     JsonHelper jsonHelper;
 
@@ -63,7 +115,7 @@ void Menu::addDish() {
     // Создаем новое блюдо
     Menu newDish;
 
-    json jsonData = jsonHelper.readJsonData("products.json");
+    json productsData = jsonHelper.readJsonData("products.json");
 
     cout << "Введите наименование блюда: ";
     cin.ignore();
@@ -80,28 +132,22 @@ void Menu::addDish() {
         cout << "Введите ID продукта: ";
         cin >> product.id;
 
-        string productName;
         bool found = false;
 
-        Product selectedProduct;
-        for (const auto& selectedProduct : jsonData["products"]) {
+        for (const auto& selectedProduct : productsData["products"]) {
             if (selectedProduct["id"] == product.id) {
                 found = true;
-                selectedProduct["name"] == productName;
+                // Создаем новый продукт на основе найденного продукта
+                Product newIngredient;
+                newIngredient.id = selectedProduct["id"];
+                newIngredient.name = selectedProduct["name"];
+                newIngredient.price = selectedProduct["price"];
+                newDish.ingredients.push_back(newIngredient);
                 break;
             }
         }
 
-        if (found) {
-
-            // Используйте selectedProduct для доступа к данным о выбранном продукте
-            // Например, вы можете использовать selectedProduct.name для получения наименования продукта
-            // и добавить его в новое блюдо newDish.ingredients.push_back(selectedProduct);
-
-            // Продолжите код для обработки выбранного продукта
-            newDish.ingredients.push_back(product);
-        }
-        else {
+        if (!found) {
             cout << "Продукт с указанным ID не найден." << endl;
             // Обработайте случай, когда продукт не найден
         }
@@ -121,9 +167,14 @@ void Menu::addDish() {
     cin >> newDish.cost;
 
     // Загрузка данных из JSON-файла
-    /*json jsonData = jsonHelper.readJsonData("menu.json");*/
+    json menuData = jsonHelper.readJsonData("menu.json");
 
     // Добавление нового блюда в JSON-данные
+    json dishJson;
+
+    dishJson["name"] = newDish.name;
+    dishJson["weight"] = newDish.weight;
+
     json ingredientsJson = json::array();
     for (const auto& ingredient : newDish.ingredients) {
         json ingredientJson = {
@@ -134,17 +185,18 @@ void Menu::addDish() {
         ingredientsJson.push_back(ingredientJson);
     }
 
-    jsonData["dishes"].push_back({
-    {"name", newDish.name},
-    {"weight", newDish.weight},
-    {"ingredients", ingredientsJson},
-    {"description", newDish.description},
-    {"cookingTime", newDish.cookingTime},
-    {"cost", newDish.cost}
-        });
+    dishJson["ingredients"] = ingredientsJson;
+
+    dishJson["description"] = newDish.description;
+    dishJson["cookingTime"] = newDish.cookingTime;
+    dishJson["cost"] = newDish.cost;
+
+
+
+    menuData["menu"].push_back(dishJson);
 
     // Сохранение обновленных данных в JSON-файл
-    jsonHelper.writeJsonData("menu.json", jsonData);
+    jsonHelper.writeJsonData("menu.json", menuData);
 
     cout << "Блюдо успешно добавлено!" << endl;
 
@@ -155,6 +207,7 @@ void Menu::addDish() {
     system("pause");
     system("cls");
 }
+
 
 
 
