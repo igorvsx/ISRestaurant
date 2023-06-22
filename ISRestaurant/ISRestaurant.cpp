@@ -11,6 +11,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include <openssl/sha.h>
+#include "LogLibrary.h"
 
 using namespace std;
 
@@ -162,6 +163,8 @@ void registerUser() {
 
 // Функция для авторизации пользователя
 bool loginUser(User& user, std::string& role) {
+    LogLibrary loglibrary;
+
     system("cls");
     JsonHelper jsonHelper;
     std::string username, password;
@@ -182,6 +185,7 @@ bool loginUser(User& user, std::string& role) {
             role = user["role"];
             system("cls");
             std::cout << "Пользователь успешно аутентифицирован!" << endl;
+            loglibrary.logAction(role, "Пользователь вошёл");
             return true;
         }
     }

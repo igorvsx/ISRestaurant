@@ -132,6 +132,7 @@
     <ClCompile Include="Guest.cpp" />
     <ClCompile Include="ISRestaurant.cpp" />
     <ClCompile Include="JsonHelper.cpp" />
+    <ClCompile Include="LogLibrary.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Order.cpp" />
     <ClCompile Include="Product.cpp" />
@@ -141,6 +142,7 @@
     <ClInclude Include="Guest.h" />
     <ClInclude Include="ISRestaurant.h" />
     <ClInclude Include="JsonHelper.h" />
+    <ClInclude Include="LogLibrary.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Order.h" />
     <ClInclude Include="Product.h" />
