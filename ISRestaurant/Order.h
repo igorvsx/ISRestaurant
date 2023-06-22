@@ -8,4 +8,5 @@ public:
     void createOrder();
     void displayOrders();
     void withdrawFunds(double amount);
+    void printSendOrders();
 };

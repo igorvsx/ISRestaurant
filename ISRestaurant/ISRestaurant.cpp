@@ -260,6 +260,10 @@ int main()
                 user.supplierMenu();
                 system("cls");
             }
+            else if (role == "Bughalter") {
+                user.accountantMenu();
+                system("cls");
+            }
             else {
                 break; // Выход из цикла, если роль неизвестна или не имеет меню
             }

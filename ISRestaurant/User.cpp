@@ -4,6 +4,7 @@
 #include "User.h"
 #include <iostream>
 #include <fstream>
+#include <ctime>
 #include <vector>
 #include <string>
 #include <limits>
@@ -359,6 +360,57 @@ void User::supplierMenu() {
     }
 }
 
+void User::accountantMenu() {
+    Order order;
+    system("cls");
+    int choice;
+
+    while (true) {
+        cout << "1. Посмотреть отправленные заявки\n";
+        cout << "2. Посмотреть принятые поставки\n";
+        cout << "3. Посмотреть баланс ресторана\n";
+        cout << "4. Выход\n";
+        cout << "Выберите действие: ";
+        cin >> choice;
+
+        if (cin.fail()) {
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            cin.clear();
+            system("cls");
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
+        }
+
+        switch (choice) {
+        case 1:
+            order.printSendOrders();
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            return;
+        default:
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            system("cls");
+            break;
+        }
+    }
+}
+
+std::string getCurrentDate() {
+    std::time_t currentTime = std::time(nullptr);
+    std::tm localTime;
+    localtime_s(&localTime, &currentTime);
+
+    char buffer[80];
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d", &localTime);
+
+    return std::string(buffer);
+}
+
+
 void User::ordersList() {
     JsonHelper jsonHelper;
     Order order;
@@ -367,6 +419,7 @@ void User::ordersList() {
     // Загрузка данных из JSON-файла
     json orderData = jsonHelper.readJsonData("orders.json");
     json productsData = jsonHelper.readJsonData("products.json");
+    json existingData = jsonHelper.readJsonData("DoneOrders.json");
 
     // Проверка наличия заявок
     if (orderData["orders"].empty()) {
@@ -455,6 +508,19 @@ void User::ordersList() {
     for (const auto& order : orderData["orders"]) {
         if (!(order["product_name"] == choice && order["quantity"].get<int>() == quantity)) {
             updatedOrderData.push_back(order);
+        }
+        else {
+            // Заявка выполнена, создаем JSON-объект с информацией о выполненной заявке
+            json doneOrderData = {
+                {"product_id", order["product_id"]},
+                {"product_name", order["product_name"]},
+                {"quantity", order["quantity"]},
+                {"date_executed", getCurrentDate()} // Здесь getCurrentDate() - метод для получения текущей даты
+            };
+
+            // Добавляем выполненную заявку в файл "DoneOrders.json"
+            existingData["DoneOrders"].push_back(doneOrderData);
+            jsonHelper.writeJsonData("DoneOrders.json", existingData);
         }
     }
 

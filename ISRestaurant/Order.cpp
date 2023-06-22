@@ -1,5 +1,7 @@
 #include "Order.h"
 #include "JsonHelper.h"
+#include <ctime>
+#define _CRT_SECURE_NO_WARNINGS
 
 void TrunkTxt() {
     std::ofstream balanceFile;
@@ -29,6 +31,13 @@ double getBalance() {
 void Order::createOrder() {
     JsonHelper jsonHelper;
     system("cls");
+
+    std::time_t currentTime = std::time(nullptr);
+    std::tm localTime;
+    localtime_s(&localTime, &currentTime);
+    char timeBuffer[26];
+    asctime_s(timeBuffer, sizeof(timeBuffer), &localTime);
+    std::string sendTime(timeBuffer);
 
     // Загрузка данных о продуктах
     json productData = jsonHelper.readJsonData("products.json");
@@ -86,18 +95,24 @@ void Order::createOrder() {
     newOrder["product_name"] = selectedProduct["name"];
     newOrder["quantity"] = quantity;
 
+    newOrder["send_time"] = sendTime;
+
     // Добавление новой заявки в список
     orderData["orders"].push_back(newOrder);
 
     // Сохранение обновленных данных в файле
     jsonHelper.writeJsonData("orders.json", orderData);
 
+    // Сохранение отправленной заявки в файл "SendOrders.json"
+    json sendOrdersData = jsonHelper.readJsonData("SendOrders.json");
+    sendOrdersData["SendOrders"].push_back(newOrder);
+    jsonHelper.writeJsonData("SendOrders.json", sendOrdersData);
+
     std::cout << "Заявка успешно создана." << std::endl;
 
     system("pause");
     system("cls");
 }
-
 
 void Order::withdrawFunds(double amount){
     double currentBalance = getBalance();
@@ -158,4 +173,35 @@ void Order::displayOrders() {
 
     system("pause");
     system("cls");
+}
+
+void Order::printSendOrders() {
+    system("cls");
+    JsonHelper jsonHelper;
+
+
+    // Чтение данных из файла "SendOrders.json"
+    json sendOrderData = jsonHelper.readJsonData("SendOrders.json");
+
+    // Проверка наличия заявок
+    if (sendOrderData["SendOrders"].empty()) {
+        std::cout << "Список отправленных заявок пуст." << std::endl;
+        return;
+    }
+
+    // Вывод списка отправленных заявок
+    std::cout << "Список отправленных заявок:" << std::endl;
+    for (const auto& sendOrder : sendOrderData["SendOrders"]) {
+        std::cout << "Название продукта: " << sendOrder["product_name"] << std::endl;
+        std::cout << "Количество: " << sendOrder["quantity"] << std::endl;
+        std::cout << "Время отправки: " << sendOrder["send_time"] << std::endl;
+        std::cout << "-----------------------" << std::endl;
+    }
+    int choice;
+    std::cout << "Введите любой символ для выхода: ";
+    std::cin >> choice;
+    switch (choice) {
+    default:
+        return;
+    }
 }
