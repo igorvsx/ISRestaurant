@@ -3,7 +3,7 @@
         {
             "cookingTime": "55",
             "cost": 45.0,
-            "description": "3",
+            "description": "fresh",
             "ingredients": [
                 {
                     "id": 1,
@@ -16,7 +16,7 @@
                     "price": 45.0
                 }
             ],
-            "name": "salad",
+            "name": "kartoshka",
             "weight": "25"
         }
     ]

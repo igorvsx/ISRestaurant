@@ -55,58 +55,6 @@ void Menu::editMenu() {
     }
 }
 
-//json Menu::to_json() const
-//{
-//    nlohmann::json jsonObj;
-//    jsonObj["name"] = name;
-//    jsonObj["description"] = description;
-//    jsonObj["ingredients"] = nlohmann::json::array();  // Create an empty JSON array
-//
-//    // Convert ingredients vector to JSON array
-//    for (const auto& ingredient : ingredients) {
-//        jsonObj["ingredients"].push_back(ingredient.to_json());
-//    }
-//
-//    jsonObj["price"] = price;
-//    jsonObj["preparationTime"] = preparationTime;
-//
-//    return jsonObj;
-//}
-//
-//void MenuItem::addMenuItem() {
-//    json menuData;
-//    std::ifstream file("../menu.json");
-//    if (file.is_open()) {
-//        try
-//        {
-//            file >> menuData;
-//            file.close();
-//        }
-//        catch (const std::exception&)
-//        {
-//
-//        }
-//
-//    }
-//    else {
-//        std::cerr << "Ошибка при окрытии файла\n";
-//        return;
-//    }
-//
-//    json menuItemJson = to_json();
-//
-//    // Добавление нового продукта в массив
-//    menuData["menu"].push_back(menuItemJson);
-//
-//    // Запись обновленных данных в файл
-//    std::ofstream outFile("../menu.json");
-//    outFile << std::setw(4) << menuData << std::endl;
-//    outFile.close();
-//
-//    std::cout << "Продукт успешно добавлен.\n";
-//}
-
-
 void Menu::addDish() {
     JsonHelper jsonHelper;
 
@@ -191,8 +139,6 @@ void Menu::addDish() {
     dishJson["cookingTime"] = newDish.cookingTime;
     dishJson["cost"] = newDish.cost;
 
-
-
     menuData["menu"].push_back(dishJson);
 
     // Сохранение обновленных данных в JSON-файл
@@ -209,109 +155,122 @@ void Menu::addDish() {
 }
 
 
+void Menu::removeDish()
+{
+    JsonHelper jsonHelper;
 
+    system("cls");
 
-void Menu::removeDish() {
-    //clearConsole();
+    // Загрузка данных из JSON-файла
+    json jsonData = jsonHelper.readJsonData("menu.json");
 
-    //// Чтение данных из файла
-    //ifstream inFile("menu.txt");
-    //if (!inFile.is_open()) {
-    //    cout << "Ошибка открытия файла для чтения данных." << endl;
-    //    return;
-    //}
+    // Проверка наличия записей в меню
+    if (jsonData["menu"].empty()) {
+        cout << "Меню пусто. Нет записей для удаления." << endl;
+        system("pause");
+        system("cls");
+        return;
+    }
 
-    //// Вектор для хранения блюд из файла
-    //vector<MenuItem> fileItems;
+    // Вывод текущего меню с номерами записей
+    cout << "Текущее меню:\n";
+    for (size_t i = 0; i < jsonData["menu"].size(); ++i) {
+        cout << "Запись " << i + 1 << ":\n";
+        cout << "Название: " << jsonData["menu"][i]["name"].get<string>() << endl;
+        cout << "Описание: " << jsonData["menu"][i]["description"].get<string>() << endl;
+        cout << "--------------------------\n";
+    }
 
-    //string line;
-    //MenuItem dish;
+    // Ввод номера записи для удаления
+    int recordNumber;
+    cout << "Введите номер записи для удаления: ";
+    cin >> recordNumber;
 
-    //// Читаем данные из файла и сохраняем блюда в векторе
-    //while (getline(inFile, line)) {
-    //    if (line == "===") {
-    //        fileItems.push_back(dish);
-    //        dish = MenuItem(); // Сбрасываем dish для следующего блюда
-    //    }
-    //    else if (!line.empty()) {
-    //        switch (fileItems.size() % 5) {
-    //        case 0: {
-    //            // Получаем название и цену из строки
-    //            size_t pricePos = line.find_last_of(' ');
-    //            dish.name = line.substr(0, pricePos);
-    //            try {
-    //                dish.cost = stod(line.substr(pricePos + 1));
-    //            }
-    //            catch (const std::invalid_argument&) {
-    //                cout << "Ошибка преобразования цены блюда. Пропускаем блюдо." << endl;
-    //                continue;
-    //            }
-    //            break;
-    //        }
-    //        case 1: dish.weight = line; break;
-    //        case 2: dish.description = line; break;
-    //        case 3: dish.cookingTime = line; break;
-    //        case 4: dish.cost = stod(line); break;
-    //        }
-    //    }
-    //}
-    //inFile.close();
+    // Проверка введенного номера записи
+    if (recordNumber <= 0 || recordNumber > jsonData["menu"].size()) {
+        cout << "Введен некорректный номер записи." << endl;
+        system("pause");
+        system("cls");
+        return;
+    }
 
-    //// Выводим наименования блюд в консоль
-    //if (fileItems.empty()) {
-    //    cout << "В меню нет доступных блюд." << endl;
-    //    return;
-    //}
+    // Удаление выбранной записи
+    jsonData["menu"].erase(jsonData["menu"].begin() + recordNumber - 1);
 
-    //cout << "Список доступных блюд:" << endl;
-    //for (const auto& item : fileItems) {
-    //    cout << "- " << item.name << endl;
-    //}
+    // Сохранение обновленных данных в JSON-файл
+    jsonHelper.writeJsonData("menu.json", jsonData);
 
-    //// Просим пользователя ввести название блюда для удаления
-    //string dishName;
-    //cout << "Введите название блюда для удаления: ";
-    //cin.ignore();
-    //getline(cin, dishName);
+    cout << "Запись успешно удалена!" << endl;
 
-    //// Поиск и удаление блюда
-    //bool found = false;
-    //for (auto it = fileItems.begin(); it != fileItems.end(); ++it) {
-    //    if (it->name == dishName) {
-    //        fileItems.erase(it);
-    //        found = true;
-    //        break;
-    //    }
-    //}
-
-    //if (found) {
-    //    // Перезаписываем данные в файле без удаленного блюда
-    //    ofstream outFile("menu.txt");
-    //    if (outFile.is_open()) {
-    //        for (const auto& item : fileItems) {
-    //            outFile << item.name << " " << item.cost << endl;
-    //            outFile << item.weight << endl;
-    //            outFile << item.description << endl;
-    //            outFile << item.cookingTime << endl;
-    //            outFile << item.cost << endl;
-    //            outFile << "===" << endl;
-    //        }
-    //        outFile.close();
-    //        cout << "Блюдо успешно удалено из меню." << endl;
-    //    }
-    //    else {
-    //        cout << "Ошибка открытия файла для записи данных." << endl;
-    //    }
-    //}
-    //else {
-    //    cout << "Блюдо с указанным названием не найдено." << endl;
-    //}
-
-    //Sleep(1500);
-    //clearConsole();
+    system("pause");
+    system("cls");
 }
 
 
-void Menu::editDish() {
-    /*cout << "";*/
+void Menu::editDish()
+{
+    JsonHelper jsonHelper;
+
+    system("cls");
+
+    // Загрузка данных из JSON-файла
+    json jsonData = jsonHelper.readJsonData("menu.json");
+
+    // Проверка наличия записей в меню
+    if (jsonData["menu"].empty()) {
+        cout << "Меню пусто. Нет записей для редактирования." << endl;
+        system("pause");
+        system("cls");
+        return;
+    }
+
+    // Вывод текущего меню с номерами записей
+    cout << "Текущее меню:\n";
+    for (size_t i = 0; i < jsonData["menu"].size(); ++i) {
+        cout << "Запись " << i + 1 << ":\n";
+        cout << "Название: " << jsonData["menu"][i]["name"].get<string>() << endl;
+        cout << "Описание: " << jsonData["menu"][i]["description"].get<string>() << endl;
+        cout << "--------------------------\n";
+    }
+
+    // Ввод номера записи для редактирования
+    int recordNumber;
+    cout << "Введите номер записи для редактирования: ";
+    cin >> recordNumber;
+
+    // Проверка введенного номера записи
+    if (recordNumber <= 0 || recordNumber > jsonData["menu"].size()) {
+        cout << "Введен некорректный номер записи." << endl;
+        system("pause");
+        system("cls");
+        return;
+    }
+
+    // Выбор редактируемой записи
+    json& selectedDish = jsonData["menu"][recordNumber - 1];
+
+    // Вывод информации о выбранном блюде
+    cout << "Редактирование блюда:\n";
+    cout << "Название: " << selectedDish["name"].get<string>() << endl;
+    cout << "Описание: " << selectedDish["description"].get<string>() << endl;
+
+    // Внесение изменений
+    cin.ignore();
+    cout << "Введите новое название блюда: ";
+    string newName;
+    std::getline(cin, newName);
+    selectedDish["name"] = newName;
+
+    cout << "Введите новое описание блюда: ";
+    string newDescription;
+    std::getline(cin, newDescription);
+    selectedDish["description"] = newDescription;
+
+    // Сохранение обновленных данных в JSON-файл
+    jsonHelper.writeJsonData("menu.json", jsonData);
+
+    cout << "Запись успешно отредактирована!" << endl;
+
+    system("pause");
+    system("cls");
 }
