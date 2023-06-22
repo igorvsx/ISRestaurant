@@ -4,7 +4,12 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <vector>
+#include <limits>
+#include <cstdlib>
+#include "JsonHelper.h"
 #define NOMINMAX
+#include <windows.h>
 
 using namespace std;
 
@@ -51,51 +56,107 @@ void Menu::editMenu() {
 }
 
 void Menu::addDish() {
-    //MenuItem dish;
+    JsonHelper jsonHelper;
 
-    //clearConsole();
+    system("cls");
 
-    //cout << "Введите наименование блюда: ";
-    //cin.ignore();
-    //getline(cin, dish.name);
+    // Создаем новое блюдо
+    Menu newDish;
 
-    //cout << "Введите граммовку: ";
-    //getline(cin, dish.weight);
+    json jsonData = jsonHelper.readJsonData("products.json");
 
-    //// Здесь можно реализовать логику для выбора состава продуктов из списка
+    cout << "Введите наименование блюда: ";
+    cin.ignore();
+    getline(cin, newDish.name);
 
-    //cout << "Введите описание блюда: ";
-    //getline(cin, dish.description);
+    cout << "Введите граммовку блюда: ";
+    getline(cin, newDish.weight);
 
-    //cout << "Введите примерное время приготовления: ";
-    //getline(cin, dish.cookingTime);
+    // Добавление ингредиентов
+    char choice;
+    do {
 
-    //cout << "Введите стоимость блюда: ";
-    //cin >> dish.cost;
+        Product product;
+        cout << "Введите ID продукта: ";
+        cin >> product.id;
 
-    //items.push_back(dish);
+        string productName;
+        bool found = false;
 
-    //cout << "Блюдо успешно добавлено в меню." << endl;
+        Product selectedProduct;
+        for (const auto& selectedProduct : jsonData["products"]) {
+            if (selectedProduct["id"] == product.id) {
+                found = true;
+                selectedProduct["name"] == productName;
+                break;
+            }
+        }
 
-    //Sleep(1500);
-    //clearConsole();
+        if (found) {
 
-    //// Сохранение данных в файл
-    //ofstream outFile("menu.txt", ios::app); // Открываем файл для добавления данных в конец
-    //if (outFile.is_open()) {
-    //    outFile << dish.name << endl;
-    //    outFile << dish.weight << endl;
-    //    outFile << dish.description << endl;
-    //    outFile << dish.cookingTime << endl;
-    //    outFile << dish.cost << endl;
-    //    outFile << "===" << endl; // Разделитель между блюдами
-    //    outFile.close();
-    //    cout << "Данные успешно сохранены в файл." << endl;
-    //}
-    //else {
-    //    cout << "Ошибка открытия файла для сохранения данных." << endl;
-    //}
+            // Используйте selectedProduct для доступа к данным о выбранном продукте
+            // Например, вы можете использовать selectedProduct.name для получения наименования продукта
+            // и добавить его в новое блюдо newDish.ingredients.push_back(selectedProduct);
+
+            // Продолжите код для обработки выбранного продукта
+            newDish.ingredients.push_back(product);
+        }
+        else {
+            cout << "Продукт с указанным ID не найден." << endl;
+            // Обработайте случай, когда продукт не найден
+        }
+
+        cout << "Добавить еще ингредиенты? (y/n): ";
+        cin >> choice;
+    } while (choice == 'y');
+
+    cout << "Введите описание блюда: ";
+    cin.ignore();
+    getline(cin, newDish.description);
+
+    cout << "Введите время приготовления блюда: ";
+    getline(cin, newDish.cookingTime);
+
+    cout << "Введите стоимость блюда: ";
+    cin >> newDish.cost;
+
+    // Загрузка данных из JSON-файла
+    /*json jsonData = jsonHelper.readJsonData("menu.json");*/
+
+    // Добавление нового блюда в JSON-данные
+    json ingredientsJson = json::array();
+    for (const auto& ingredient : newDish.ingredients) {
+        json ingredientJson = {
+            {"id", ingredient.id},
+            {"name", ingredient.name},
+            {"price", ingredient.price}
+        };
+        ingredientsJson.push_back(ingredientJson);
+    }
+
+    jsonData["dishes"].push_back({
+    {"name", newDish.name},
+    {"weight", newDish.weight},
+    {"ingredients", ingredientsJson},
+    {"description", newDish.description},
+    {"cookingTime", newDish.cookingTime},
+    {"cost", newDish.cost}
+        });
+
+    // Сохранение обновленных данных в JSON-файл
+    jsonHelper.writeJsonData("menu.json", jsonData);
+
+    cout << "Блюдо успешно добавлено!" << endl;
+
+    // Очистка буфера ввода
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    // Ожидание нажатия клавиши пользователем
+    system("pause");
+    system("cls");
 }
+
+
 
 void Menu::removeDish() {
     //clearConsole();

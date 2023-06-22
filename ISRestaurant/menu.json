@@ -1,0 +1,35 @@
+{
+    "dishes": [
+        {
+            "cookingTime": "25",
+            "cost": 25.0,
+            "description": "fds",
+            "ingredients": [
+                {
+                    "id": 1,
+                    "name": "",
+                    "price": -9.255963134931783e+61
+                },
+                {
+                    "id": 2,
+                    "name": "",
+                    "price": -9.255963134931783e+61
+                }
+            ],
+            "name": "fds",
+            "weight": "20"
+        }
+    ],
+    "products": [
+        {
+            "id": 1,
+            "name": "cucumber",
+            "price": 444.0
+        },
+        {
+            "id": 2,
+            "name": "tomato",
+            "price": 45.0
+        }
+    ]
+}
