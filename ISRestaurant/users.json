@@ -39,6 +39,14 @@
             "patronymic": "bughalter",
             "role": "Bughalter",
             "username": "bughalter"
+        },
+        {
+            "firstName": "ofic",
+            "lastName": "ofic",
+            "password": "e24280df0c0799b35b6e2f4c20b3f08c7af3e5c9a10f6ab9e112ddafbaec7955",
+            "patronymic": "ofic",
+            "role": "Officiant",
+            "username": "ofic"
         }
     ]
 }

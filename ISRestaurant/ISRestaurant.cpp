@@ -10,8 +10,26 @@
 #include <iomanip>
 #define NOMINMAX
 #include <windows.h>
+#include <openssl/sha.h>
 
 using namespace std;
+
+std::string hashPassword(const std::string& password) {
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, password.c_str(), password.length());
+    SHA256_Final(hash, &sha256);
+
+    std::string hashedPassword;
+    char hexChar[3];
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+        sprintf_s(hexChar, "%02x", hash[i]);
+        hashedPassword += hexChar;
+    }
+
+    return hashedPassword;
+}
 
 #pragma region Регистрация
 // Функция для проверки существования пользователя в файле
@@ -115,6 +133,9 @@ void registerUser() {
     std::cout << "Пароль: ";
     std::cin >> password;
 
+    std::string hashedPassword = hashPassword(password);
+
+
     // Создаем объект JSON для нового пользователя
     json user;
     user["role"] = role;
@@ -122,7 +143,7 @@ void registerUser() {
     user["lastName"] = lastName;
     user["patronymic"] = patronymic;
     user["username"] = username;
-    user["password"] = password;
+    user["password"] = hashedPassword;
 
     // Загружаем существующие данные из файла
     json jsonData = jsonHelper.readJsonData("users.json");
@@ -150,12 +171,14 @@ bool loginUser(User& user, std::string& role) {
     std::cout << "Пароль: ";
     std::cin >> password;
 
+    std::string hashedPassword = hashPassword(password);
+
     // Загружаем данные из файла
     json jsonData = jsonHelper.readJsonData("users.json");
 
     // Поиск пользователя с указанным логином и паролем
     for (const auto& user : jsonData["users"]) {
-        if (user["username"] == username && user["password"] == password) {
+        if (user["username"] == username && user["password"] == hashedPassword) {
             role = user["role"];
             system("cls");
             std::cout << "Пользователь успешно аутентифицирован!" << endl;
