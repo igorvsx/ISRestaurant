@@ -3,7 +3,7 @@
         {
             "cookingTime": "55",
             "cost": 45.0,
-            "description": "fresh",
+            "description": "3",
             "ingredients": [
                 {
                     "id": 1,
@@ -16,8 +16,27 @@
                     "price": 45.0
                 }
             ],
-            "name": "kartoshka",
+            "name": "salad",
             "weight": "25"
+        },
+        {
+            "cookingTime": "90",
+            "cost": 500.0,
+            "description": "jarenoe",
+            "ingredients": [
+                {
+                    "id": 1,
+                    "name": "cucumber",
+                    "price": 444.0
+                },
+                {
+                    "id": 2,
+                    "name": "tomato",
+                    "price": 45.0
+                }
+            ],
+            "name": "myaso",
+            "weight": "760"
         }
     ]
 }

@@ -215,6 +215,7 @@ void Menu::editDish()
 
     // Загрузка данных из JSON-файла
     json jsonData = jsonHelper.readJsonData("menu.json");
+    json productsData = jsonHelper.readJsonData("products.json");
 
     // Проверка наличия записей в меню
     if (jsonData["menu"].empty()) {
@@ -266,6 +267,82 @@ void Menu::editDish()
     std::getline(cin, newDescription);
     selectedDish["description"] = newDescription;
 
+    cout << "Введите новую стоимость блюда: ";
+    double newCost;
+    cin >> newCost;
+    selectedDish["cost"] = newCost;
+
+    cout << "Введите новое время приготовления блюда: ";
+    string newCookingTime;
+    cin.ignore();
+    std::getline(cin, newCookingTime);
+    selectedDish["cookingTime"] = newCookingTime;
+
+    cout << "Введите новую граммовку блюда: ";
+    string newWeight;
+    std::getline(cin, newWeight);
+    selectedDish["weight"] = newWeight;
+
+    // Редактирование ингредиентов
+    selectedDish["ingredients"].clear();
+
+    //char choice;
+    //do {
+    //    Product product;
+    //    cout << "Введите ID продукта: ";
+    //    cin >> product.id;
+
+
+    //    // Поиск продукта по ID в базе данных и добавление в ингредиенты блюда
+    //    bool found = false;
+    //    for (const auto& availableProduct : jsonData["products"]) {
+    //        if (availableProduct["id"] == product.id) {
+    //            found = true;
+    //            selectedDish["ingredients"].push_back(availableProduct);
+    //            break;
+    //        }
+    //    }
+
+    //    if (!found) {
+    //        cout << "Продукт с указанным ID не найден." << endl;
+    //        // Обработка случая, когда продукт не найден
+    //    }
+
+    //    cout << "Добавить еще ингредиенты? (y/n): ";
+    //    cin >> choice;
+    //} while (choice == 'y');
+
+    char choice;
+    do {
+
+        Product product;
+        cout << "Введите ID продукта: ";
+        cin >> product.id;
+
+        bool found = false;
+
+        for (const auto& availableProduct : productsData["products"]) {
+            if (availableProduct["id"] == product.id) {
+                found = true;
+                // Создаем новый продукт на основе найденного продукта
+                Product newIngredient;
+                newIngredient.id = availableProduct["id"];
+                newIngredient.name = availableProduct["name"];
+                newIngredient.price = availableProduct["price"];
+                selectedDish["ingredients"].push_back(availableProduct);
+                break;
+            }
+        }
+
+        if (!found) {
+            cout << "Продукт с указанным ID не найден." << endl;
+            // Обработайте случай, когда продукт не найден
+        }
+
+        cout << "Добавить еще ингредиенты? (y/n): ";
+        cin >> choice;
+    } while (choice == 'y');
+
     // Сохранение обновленных данных в JSON-файл
     jsonHelper.writeJsonData("menu.json", jsonData);
 
@@ -274,3 +351,4 @@ void Menu::editDish()
     system("pause");
     system("cls");
 }
+
