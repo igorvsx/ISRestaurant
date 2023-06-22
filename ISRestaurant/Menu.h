@@ -19,6 +19,7 @@ public:
     };
 
     // Функции для работы с блюдами
+    void editMenu();
     void addDish();
     void removeDish();
     void editDish();

@@ -9,12 +9,36 @@
             "username": "admin"
         },
         {
-            "firstName": "D",
-            "lastName": "D",
+            "firstName": "b",
+            "lastName": "b",
             "password": "sklad",
-            "patronymic": "D",
+            "patronymic": "b",
             "role": "Skladskoy",
             "username": "sklad"
+        },
+        {
+            "firstName": "g",
+            "lastName": "g",
+            "password": "g",
+            "patronymic": "g",
+            "role": "g",
+            "username": "g"
+        },
+        {
+            "firstName": "povar",
+            "lastName": "povar",
+            "password": "povar",
+            "patronymic": "povar",
+            "role": "Chef",
+            "username": "povar"
+        },
+        {
+            "firstName": "bughalter",
+            "lastName": "bughalter",
+            "password": "bughalter",
+            "patronymic": "bughalter",
+            "role": "Bughalter",
+            "username": "bughalter"
         }
     ]
 }

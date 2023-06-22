@@ -12,13 +12,11 @@ public:
     std::string password;
 
     // Функции меню для разных ролей
-    void addProduct();
-    void editProduct();
-    void removeProduct();
     void guestMenu();
     void skladMenu();
     void adminMenu();
-    void editMenu();
-    void editProductList();
     void editEmployees();
+    void addEmployees();
+    void removeEmployees();
+    void editingEmployees();
 };

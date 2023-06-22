@@ -15,34 +15,34 @@ using namespace std;
 
 #pragma region Регистрация
 // Функция для проверки существования пользователя в файле
-bool userExists(const std::string& username) {
-    std::ifstream file("users.json");
-    if (!file.is_open()) {
-        return false;  // Файл не существует, пользователь не найден
-    }
-
-    json data;
-    file >> data;
-
-    if (data.contains("users")) {
-        const json& usersArray = data["users"];
-        for (const auto& user : usersArray) {
-            if (user["username"] == username) {
-                return true;  // Пользователь с таким именем уже существует
-            }
-        }
-    }
-
-    return false;  // Пользователь не найден
-}
+//bool userExists(const std::string& username) {
+//    std::ifstream file("users.json");
+//    if (!file.is_open()) {
+//        return false;  // Файл не существует, пользователь не найден
+//    }
+//
+//    json data;
+//    file >> data;
+//
+//    if (data.contains("users")) {
+//        const json& usersArray = data["users"];
+//        for (const auto& user : usersArray) {
+//            if (user["username"] == username) {
+//                return true;  // Пользователь с таким именем уже существует
+//            }
+//        }
+//    }
+//
+//    return false;  // Пользователь не найден
+//}
 
 
 // Функция для регистрации нового пользователя
 void registerUser() {
     JsonHelper jsonHelper;
     std::string role, firstName, lastName, patronymic, username, password;
-
-    cout << "\nВыберите роль пользователя:" << endl;
+    system("cls");
+    cout << "Выберите роль пользователя:" << endl;
     cout << "1. Администратор" << endl;
     cout << "2. Складской" << endl;
     cout << "3. Поставщик" << endl;
@@ -134,10 +134,14 @@ void registerUser() {
     jsonHelper.writeJsonData("users.json", jsonData);
 
     std::cout << "Пользователь успешно зарегистрирован!\n";
+
+    Sleep(1500);
+    system("cls");
 }
 
 // Функция для авторизации пользователя
 bool loginUser(User& user, std::string& role) {
+    system("cls");
     JsonHelper jsonHelper;
     std::string username, password;
 
@@ -158,7 +162,7 @@ bool loginUser(User& user, std::string& role) {
             return true;
         }
     }
-
+    system("cls");
     std::cout << "Неверный логин или пароль. Попробуйте еще раз.\n";
     return false;
 }

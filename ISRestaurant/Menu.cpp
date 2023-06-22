@@ -1,9 +1,53 @@
 #include "Menu.h"
+#include "Product.h"
+#include <string>
 #include <fstream>
+#include <iostream>
+#include <iomanip>
+#define NOMINMAX
 
+using namespace std;
 
-void clearConsole() {
+void Menu::editMenu() {
     system("cls");
+    int choice;
+
+    while (true) {
+        cout << "Редактирование меню:\n";
+        cout << "1. Добавить блюдо\n";
+        cout << "2. Удалить блюдо\n";
+        cout << "3. Редактировать блюдо\n";
+        cout << "4. Вернуться в предыдущее меню\n";
+        cout << "Выберите действие: ";
+        cin >> choice;
+
+        if (cin.fail()) {
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            cin.clear();
+            system("cls");
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
+        }
+
+        switch (choice) {
+        case 1:
+            addDish();
+            editMenu();
+            break;
+        case 2:
+            removeDish();
+            break;
+        case 3:
+            editDish();
+            break;
+        case 4:
+            return;  // Выход из функции editMenu() и возврат к предыдущему меню
+        default:
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            system("cls");
+            break;
+        }
+    }
 }
 
 void Menu::addDish() {
