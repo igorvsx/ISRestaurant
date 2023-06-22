@@ -196,6 +196,8 @@ bool loginUser(User& user, std::string& role) {
 
 #pragma endregion Регистрация
 
+
+
 #pragma region main
 int main()
 {
@@ -252,6 +254,10 @@ int main()
             }
             else if (role == "Skladskoy") {
                 user.skladMenu();
+                system("cls");
+            }
+            else if (role == "Supplier") {
+                user.supplierMenu();
                 system("cls");
             }
             else {

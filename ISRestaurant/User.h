@@ -19,4 +19,7 @@ public:
     void addEmployees();
     void removeEmployees();
     void editingEmployees();
+    void supplierMenu();
+    void ordersList();
+
 };

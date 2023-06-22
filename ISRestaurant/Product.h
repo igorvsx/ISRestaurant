@@ -12,4 +12,5 @@ public:
     void editProduct();
     void removeProduct();
     void editingProducts();
+    void productList();
 };

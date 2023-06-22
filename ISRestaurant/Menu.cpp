@@ -154,7 +154,6 @@ void Menu::addDish() {
     system("cls");
 }
 
-
 void Menu::removeDish()
 {
     JsonHelper jsonHelper;
@@ -205,7 +204,6 @@ void Menu::removeDish()
     system("pause");
     system("cls");
 }
-
 
 void Menu::editDish()
 {

@@ -9,8 +9,10 @@
 #include <limits>
 #include <cstdlib>
 #include <iomanip>
+#include <algorithm>
 #define NOMINMAX
 #include <windows.h>
+#include "Order.h"
 
 using namespace std;
 
@@ -285,12 +287,14 @@ void User::adminMenu() {
 }
 
 void User::skladMenu() {
+
     system("cls");
     int choice;
 
     while (true) {
-        cout << "1. Создать заявку\n";
         cout << "1. Посмотреть склад\n";
+        cout << "2. Создать заявку\n";
+        cout << "3. Выйти\n";
         cout << "Выберите действие: ";
         cin >> choice;
 
@@ -303,28 +307,168 @@ void User::skladMenu() {
         }
 
         Menu menu;
+        Product product;
+        Order order;
 
         switch (choice) {
         case 1:
-            menu.addDish();
-            menu.editMenu();
+            product.productList();
             break;
         case 2:
-            menu.removeDish();
-            return;
+            order.createOrder();
             break;
         case 3:
-            menu.editDish();
             return;
-            break;
-        case 4:
-            return;  // Выход из функции editMenu() и возврат к предыдущему меню
         default:
             cout << "Неправильный выбор. Попробуйте еще раз." << endl;
             system("cls");
             break;
         }
     }
+}
+
+void User::supplierMenu() {
+    system("cls");
+    int choice;
+
+    while (true) {
+        cout << "1. Посмотреть заявки\n";
+        cout << "2. Выйти\n";
+        cout << "Выберите действие: ";
+        cin >> choice;
+
+        if (cin.fail()) {
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            cin.clear();
+            system("cls");
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
+        }
+
+        switch (choice) {
+        case 1:
+            ordersList();
+            break;
+        case 2:
+            return;
+        default:
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            system("cls");
+            break;
+        }
+    }
+}
+
+void User::ordersList() {
+    JsonHelper jsonHelper;
+    Order order;
+    system("cls");
+
+    // Загрузка данных из JSON-файла
+    json orderData = jsonHelper.readJsonData("orders.json");
+    json productsData = jsonHelper.readJsonData("products.json");
+
+    // Проверка наличия заявок
+    if (orderData["orders"].empty()) {
+        cout << "Список заявок пуст." << endl;
+        Sleep(1500);
+        system("cls");
+        return;
+    }
+
+    
+    // Вывод списка заявок
+    for (const auto& orderItem : orderData["orders"]) {
+        int productId = orderItem["product_id"].get<int>();
+        int quantityPro = orderItem["quantity"].get<int>();
+
+        std::cout << "Наименование: " << orderItem["product_name"] << std::endl;
+        //std::cout << "Цена за штуку: " << orderItem["price"] << std::endl;
+        std::cout << "Количество: " << quantityPro << std::endl;
+        //std::cout << "Общая стоимость: " << orderItem["price"] * quantityPro << std::endl;
+        std::cout << "-----------------------\n";
+
+        // Получаем информацию о продукте по ID из файла "products.json"
+        /*json productData = jsonHelper.getProductData(productId);
+        if (!productData.empty()) {
+           
+        }*/
+    }
+
+    string choice;
+    double price = 0;
+    int quantity = 0;
+    double amount = 0;
+
+    cout << "Введите название продукта для отправки: ";
+    cin >> choice;
+
+    
+    for (const auto& product : productsData["products"]) {
+        if (product["name"] == choice) {
+            price = product["price"].get<std::double_t>();
+            break;
+        }
+    }
+
+    for (const auto& order : orderData["orders"]) {
+        if (order["product_name"] == choice) {
+            quantity = order["quantity"].get<std::int16_t>();
+            break;
+        }
+    }
+
+    amount = price * quantity;
+
+    //получаем максимальный id
+    int Id = 0;
+
+    // Поиск максимального значения ID
+    for (const auto& product : productsData["products"]) {
+        if (product["name"] == choice) {
+            Id = product["id"].get<int>();
+        }
+    }
+
+    // Проверка наличия выбранной заявки
+    if (choice.empty()) {
+        cout << "Заявка с указанным ID не найдена." << endl;
+        system("pause");
+        system("cls");
+        return;
+    }
+
+    order.withdrawFunds(amount);
+    for (int i = Id; i < quantity; ++i) {
+        productsData["products"].push_back({
+            {"id", Id},
+            {"name", choice},
+            {"price", price}
+            });
+    }
+
+    // Сохранение обновленных данных в файле
+    jsonHelper.writeJsonData("products.json", productsData);
+
+    // Поиск и удаление выбранной заявки
+    json updatedOrderData;
+    for (const auto& order : orderData["orders"]) {
+        if (!(order["product_name"] == choice && order["quantity"].get<int>() == quantity)) {
+            updatedOrderData.push_back(order);
+        }
+    }
+
+    // Замена старых данных новыми данными
+    orderData["orders"] = updatedOrderData;
+
+
+    // Сохранение обновленных данных в JSON-файл
+    jsonHelper.writeJsonData("orders.json", orderData);
+
+    cout << "Заявка успешно обработана!" << endl;
+
+    system("pause");
+    system("cls");
 }
 
 

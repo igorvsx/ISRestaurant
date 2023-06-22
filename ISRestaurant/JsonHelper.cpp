@@ -26,3 +26,18 @@ void JsonHelper::writeJsonData(const std::string& filename, const json& jsonData
         std::cout << "Ошибка при записи данных в файл: " << e.what() << std::endl;
     }
 }
+
+json JsonHelper::getProductData(int productId) {
+    // Загружаем данные о продуктах из файла
+    json productData = readJsonData("products.json");
+
+    // Поиск продукта по ID
+    for (const auto& product : productData["products"]) {
+        if (product["id"] == productId) {
+            return product;
+        }
+    }
+
+    // Если продукт не найден, возвращаем пустой JSON-объект
+    return json();
+}

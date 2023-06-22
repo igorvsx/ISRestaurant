@@ -195,3 +195,58 @@ void Product::editingProducts() {
         }
     }
 }
+
+void Product::productList() {
+    JsonHelper jsonHelper;
+    system("cls");
+
+    // Загружаем данные из файла
+    json jsonData = jsonHelper.readJsonData("products.json");
+
+    // Создаем словарь для хранения информации о продуктах
+    std::map<int, std::tuple<std::string, int, double, double>> productInfo;
+
+    // Подсчитываем количество позиций, общую стоимость и цену за 1 штуку
+    for (const auto& product : jsonData["products"]) {
+        int id = product["id"];
+        std::string name = product["name"];
+        double price = product["price"];
+        if (productInfo.find(id) != productInfo.end()) {
+            std::get<1>(productInfo[id])++; // Увеличиваем количество позиций
+            std::get<2>(productInfo[id]) += price; // Увеличиваем общую стоимость
+        }
+        else {
+            double costPerUnit = price; // Цена за 1 штуку равна начальной цене
+            productInfo[id] = std::make_tuple(name, 1, price, costPerUnit);
+        }
+    }
+
+    // Выводим список продуктов с информацией
+    std::cout << "Список продуктов:\n";
+    for (const auto& item : productInfo) {
+        int id = item.first;
+        std::string name = std::get<0>(item.second);
+        int quantity = std::get<1>(item.second);
+        double totalCost = std::get<2>(item.second);
+        double costPerUnit = std::get<3>(item.second);
+
+        std::cout << "ID: " << id << std::endl;
+        std::cout << "Наименование: " << name << std::endl;
+        std::cout << "Количество: " << quantity << std::endl;
+        std::cout << "Общая стоимость: " << totalCost << std::endl;
+        std::cout << "Цена за 1 штуку: " << costPerUnit << std::endl;
+        std::cout << "-----------------------\n";
+    }
+
+    int choice;
+    std::cout << "Введите любой символ для выхода: ";
+    std::cin >> choice;
+    switch (choice) {
+    default:
+        return;
+        break;
+    }
+
+    Sleep(1500);
+    system("cls");
+}

@@ -12,6 +12,7 @@ class JsonHelper {
 public:
     static json readJsonData(const std::string& filename);
     static void writeJsonData(const std::string& filename, const json& jsonData);
+    static json getProductData(int productId);
 };
 
 #endif  // JSONHELPER_H
