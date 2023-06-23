@@ -208,7 +208,7 @@ int main()
     std::string role;
 
     while (!loggedIn) {
-        std::cout << "1. Регистрация\n2. Авторизация\n3. Войти как гость\n4. Выход\nВыберите действие: ";
+        std::cout << "1. Авторизация\n2. Войти как гость\n3. Выход\nВыберите действие: ";
         std::cin >> choice;
 
         // Проверка на некорректный ввод
@@ -222,18 +222,18 @@ int main()
         }
 
         switch (choice) {
-        case 1:
+        /*case 1:
             registerUser();
-            break;
-        case 2:
+            break;*/
+        case 1:
             loggedIn = loginUser(user, role);
             break;
-        case 3:
+        case 2:
             loggedIn = true;
             role = "Гость";
             user.guestMenu();
             break;
-        case 4:
+        case 3:
             return 0;
         default:
             std::cout << "Неправильный выбор. Попробуйте еще раз." << std::endl;

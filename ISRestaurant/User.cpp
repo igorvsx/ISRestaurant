@@ -575,6 +575,95 @@ void User::printBalance(const std::string& filename) {
         return;
     }
 }
+void User::printMenuCost() {
+    system("cls");
+    JsonHelper jsonHelper;
+
+    // Загрузка данных из файла selledMenu.json
+    json selledMenuData = jsonHelper.readJsonData("selledMenu.json");
+
+    // Проверка наличия данных
+    if (selledMenuData["selledMenu"].empty()) {
+        cout << "Нет проданных блюд." << endl;
+        return;
+    }
+
+    double totalCost = 0.0;
+    int totalCount = 0;
+
+    // Вывод списка проданных блюд
+    cout << "Проданные блюда:\n";
+    for (const auto& dish : selledMenuData["selledMenu"]) {
+        string dishName = dish["name"].get<string>();
+        double dishCost = dish["cost"].get<double>();
+
+        cout << "Блюдо: " << dishName << endl;
+        cout << "Цена: " << dishCost << " рублей" << endl;
+        cout << "--------------------------\n";
+
+        totalCost += dishCost;
+        totalCount++;
+    }
+
+    cout << "Общая стоимость проданных блюд: " << totalCost << " рублей" << endl;
+    cout << "Количество проданных блюд: " << totalCount << endl;
+
+    int choice;
+    std::cout << "Введите любой символ для выхода: ";
+    std::cin >> choice;
+    switch (choice) {
+    default:
+        return;
+    }
+}
+void User::printProductsCost() {
+    system("cls");
+    JsonHelper jsonHelper;
+
+    // Загрузка данных из JSON-файла
+    json purchasedData = jsonHelper.readJsonData("purchasedProducts.json");
+
+    // Проверка наличия записей
+    if (purchasedData["purchasedProducts"].empty()) {
+        cout << "Список продуктов пуст." << endl;
+        return;
+    }
+
+    // Создание структуры для хранения названий продуктов и общей стоимости
+    unordered_map<string, double> productsCost;
+
+    // Обход записей и объединение общей стоимости для продуктов с одинаковыми названиями
+    for (const auto& product : purchasedData["purchasedProducts"]) {
+        string name = product["name"].get<string>();
+        double amount = product["amount"].get<double>();
+
+        // Если продукт уже присутствует, добавляем стоимость к существующей записи
+        if (productsCost.count(name) > 0) {
+            productsCost[name] += amount;
+        }
+        else {
+            // Если продукта нет в структуре, добавляем новую запись
+            productsCost[name] = amount;
+        }
+    }
+
+    // Вывод названия продукта и общей стоимости
+    for (const auto& entry : productsCost) {
+        cout << "Продукт: " << entry.first << endl;
+        cout << "Общая стоимость: " << entry.second << " рублей" << endl;
+        cout << "-----------------------" << endl;
+    }
+
+    int choice;
+    std::cout << "Введите любой символ для выхода: ";
+    std::cin >> choice;
+    switch (choice) {
+    default:
+        return;
+    }
+}
+
+
 
 void User::makeOrder() {
 
@@ -744,6 +833,7 @@ void User::supplierMenu() {
 
 void User::accountantMenu() {
     Order order;
+    User user;
     system("cls");
     int choice;
 
@@ -751,7 +841,9 @@ void User::accountantMenu() {
         cout << "1. Посмотреть отправленные заявки\n";
         cout << "2. Посмотреть принятые поставки\n";
         cout << "3. Посмотреть баланс ресторана\n";
-        cout << "4. Выход\n";
+        cout << "4. Информация по проданным блюдам\n";
+        cout << "5. Информация о закупках продуктов\n";
+        cout << "6. Выход\n";
         cout << "Выберите действие: ";
         cin >> choice;
 
@@ -774,6 +866,12 @@ void User::accountantMenu() {
             printBalance("RestBalance.txt");
             break;
         case 4:
+            printMenuCost();
+            break;
+        case 5:
+            printProductsCost();
+            break;
+        case 6:
             return;
         default:
             cout << "Неправильный выбор. Попробуйте еще раз." << endl;

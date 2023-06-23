@@ -35,6 +35,18 @@
             "product_id": 8,
             "product_name": "carat",
             "quantity": 5
+        },
+        {
+            "date_executed": "Sat Jun 24 00:53:16 2023\n",
+            "product_id": 2,
+            "product_name": "tomato",
+            "quantity": 5
+        },
+        {
+            "date_executed": "Sat Jun 24 00:53:54 2023\n",
+            "product_id": 8,
+            "product_name": "carat",
+            "quantity": 5
         }
     ]
 }

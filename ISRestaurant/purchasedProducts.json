@@ -1,0 +1,16 @@
+{
+    "purchasedProducts": [
+        {
+            "amount": 250.0,
+            "name": "tomato"
+        },
+        {
+            "amount": 225.0,
+            "name": "carat"
+        },
+        {
+            "amount": 500.0,
+            "name": "tomato"
+        }
+    ]
+}

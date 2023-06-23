@@ -227,11 +227,32 @@ void Guest::confirmOrder() {
         updatedBalanceFile.close();
     }
 
+    // Изменение статуса заказов и сохранение в файле selledMenu.json
+    json selledMenuData;
+
+    // Загрузка данных из файла selledMenu.json
+    ifstream selledMenuFile("selledMenu.json");
+    if (selledMenuFile.is_open()) {
+        selledMenuFile >> selledMenuData;
+        selledMenuFile.close();
+    }
+
+
+
     // Изменение статуса заказов
     for (auto& order : cartData["cart"]) {
         if (order["status"] == "In processing") {
             order["status"] = "Paid for and transferred to the kitchen";
+
+            selledMenuData["selledMenu"].push_back(order);
         }
+    }
+
+    // Сохранение обновленных данных в файле selledMenu.json
+    ofstream updatedSelledMenuFile("selledMenu.json");
+    if (updatedSelledMenuFile.is_open()) {
+        updatedSelledMenuFile << selledMenuData;
+        updatedSelledMenuFile.close();
     }
 
     // Сохранение обновленных данных в JSON-файле

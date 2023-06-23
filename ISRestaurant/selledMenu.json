@@ -1,0 +1,14 @@
+{
+  "selledMenu": [
+    {
+      "cost": 45.0,
+      "name": "salad",
+      "status": "Paid for and transferred to the kitchen"
+    },
+    {
+      "cost": 45.0,
+      "name": "salad",
+      "status": "Paid for and transferred to the kitchen"
+    }
+  ]
+}

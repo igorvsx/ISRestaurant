@@ -20,6 +20,7 @@ public:
     void accountantMenu();
     void oficMenu();
 
+
     void editEmployees();
     void addEmployees();
     void removeEmployees();
@@ -27,6 +28,8 @@ public:
     void listEmployees();
     
     void printBalance(const std::string& filename);
+    void printMenuCost();
+    void printProductsCost();
     void makeOrder();
 
     void displayPaidOrdersForCook();

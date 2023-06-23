@@ -3,22 +3,32 @@
         {
             "cost": 2555.0,
             "name": "test",
-            "status": "Cooking in the kitchen"
-        },
-        {
-            "cost": 600.0,
-            "name": "grecha",
-            "status": "Cooking in the kitchen"
-        },
-        {
-            "cost": 525.0,
-            "name": "plov",
-            "status": "Cooking in the kitchen"
+            "status": "Done"
         },
         {
             "cost": 600.0,
             "name": "grecha",
             "status": "Done"
+        },
+        {
+            "cost": 525.0,
+            "name": "plov",
+            "status": "Done"
+        },
+        {
+            "cost": 600.0,
+            "name": "grecha",
+            "status": "Done"
+        },
+        {
+            "cost": 45.0,
+            "name": "salad",
+            "status": "Paid for and transferred to the kitchen"
+        },
+        {
+            "cost": 45.0,
+            "name": "salad",
+            "status": "Paid for and transferred to the kitchen"
         }
     ]
 }

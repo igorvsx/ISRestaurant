@@ -272,6 +272,13 @@ void Order::ordersList() {
     // Сохранение обновленных данных в файле
     jsonHelper.writeJsonData("products.json", productsData);
 
+    json purchasedData = jsonHelper.readJsonData("purchasedProducts.json");
+    purchasedData["purchasedProducts"].push_back({
+        {"name", choice},
+        {"amount", amount}
+        });
+    jsonHelper.writeJsonData("purchasedProducts.json", purchasedData);
+
     // Поиск и удаление выбранной заявки
     json updatedOrderData;
     for (const auto& order : orderData["orders"]) {
