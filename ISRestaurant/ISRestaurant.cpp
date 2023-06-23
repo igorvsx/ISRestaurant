@@ -267,6 +267,11 @@ int main()
                 user.povarMenu();
                 system("cls");
             }
+            else if (role == "Officiant")
+            {
+                user.oficMenu();
+                system("cls");
+            }
             else {
                 break; // Выход из цикла, если роль неизвестна или не имеет меню
             }

@@ -18,6 +18,7 @@ public:
     void povarMenu();
     void supplierMenu();
     void accountantMenu();
+    void oficMenu();
 
     void editEmployees();
     void addEmployees();
@@ -30,4 +31,6 @@ public:
 
     void displayPaidOrdersForCook();
     void startCooking();
+
+    void delivering();
 };

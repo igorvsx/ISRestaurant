@@ -371,7 +371,6 @@ void User::displayPaidOrdersForCook() {
     std::cin >> choice;
     system("cls");
 }
-
 void User::startCooking() {
     JsonHelper jsonHelper;
     system("cls");
@@ -485,6 +484,63 @@ void User::startCooking() {
 
 
     system("pause");
+    system("cls");
+}
+
+void User::delivering() {
+    JsonHelper jsonHelper;
+    system("cls");
+
+    // Загрузка данных из JSON-файла
+    json cartData = jsonHelper.readJsonData("cart.json");
+
+    // Проверка наличия записей в корзине
+    if (cartData["cart"].empty()) {
+        cout << "Нет заказов." << endl;
+        Sleep(1500);
+        system("cls");
+        return;
+    }
+
+    // Вывод заказов со статусом "Handed over to the waiter for delivery"
+    cout << "Заказы со статусом 'Handed over to the waiter for delivery':\n";
+    bool foundOrders = false;
+    for (size_t i = 0; i < cartData["cart"].size(); ++i) {
+        if (cartData["cart"][i]["status"] == "Handed over to the waiter for delivery") {
+            cout << "Заказ номер " << i + 1 << ":\n";
+            cout << "Название: " << cartData["cart"][i]["name"].get<string>() << endl;
+            cout << "Цена: " << cartData["cart"][i]["cost"].get<double>() << " рублей" << endl;
+            cout << "--------------------------\n";
+            foundOrders = true;
+        }
+    }
+
+    if (!foundOrders) {
+        cout << "Нет заказов со статусом 'Handed over to the waiter for delivery'." << endl;
+        Sleep(1500);
+        system("cls");
+        return;
+    }
+
+    int orderNumber;
+    cout << "Введите номер заказа для изменения статуса: ";
+    cin >> orderNumber;
+
+    if (orderNumber <= 0 || orderNumber > cartData["cart"].size()) {
+        cout << "Введен некорректный номер заказа." << endl;
+        system("pause");
+        system("cls");
+        return;
+    }
+
+    // Изменение статуса заказа на "выполнен"
+    cartData["cart"][orderNumber - 1]["status"] = "Done";
+
+    // Сохранение изменений в JSON-файле
+    jsonHelper.writeJsonData("cart.json", cartData);
+
+    cout << "Статус заказа успешно изменен на 'выполнен'." << endl;
+    Sleep(1500);
     system("cls");
 }
 
@@ -755,6 +811,38 @@ void User::povarMenu() {
             startCooking();
             break;
         case 3:
+            return;
+        default:
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            system("cls");
+            break;
+        }
+    }
+}
+
+void User::oficMenu() {
+    system("cls");
+    int choice;
+
+    while (true) {
+        cout << "1. Начать зарабатывать\n";
+        cout << "2. Выход\n";
+        cout << "Выберите действие: ";
+        cin >> choice;
+
+        if (cin.fail()) {
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            cin.clear();
+            system("cls");
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
+        }
+
+        switch (choice) {
+        case 1:
+            delivering();
+            break;
+        case 2:
             return;
         default:
             cout << "Неправильный выбор. Попробуйте еще раз." << endl;
