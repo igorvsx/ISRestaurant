@@ -17,4 +17,5 @@ public:
     void addDish();
     void removeDish();
     void editDish();
+    void listDishes();
 };

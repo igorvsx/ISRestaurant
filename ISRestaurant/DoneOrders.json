@@ -11,6 +11,30 @@
             "product_id": 2,
             "product_name": "tomato",
             "quantity": 3
+        },
+        {
+            "date_executed": "Fri Jun 23 20:03:35 2023\n",
+            "product_id": 5,
+            "product_name": "chese",
+            "quantity": 2
+        },
+        {
+            "date_executed": "Fri Jun 23 20:04:47 2023\n",
+            "product_id": 8,
+            "product_name": "carat",
+            "quantity": 3
+        },
+        {
+            "date_executed": "Fri Jun 23 20:07:49 2023\n",
+            "product_id": 8,
+            "product_name": "carat",
+            "quantity": 5
+        },
+        {
+            "date_executed": "Fri Jun 23 20:12:05 2023\n",
+            "product_id": 8,
+            "product_name": "carat",
+            "quantity": 5
         }
     ]
 }

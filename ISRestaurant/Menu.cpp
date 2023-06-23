@@ -19,10 +19,11 @@ void Menu::editMenu() {
 
     while (true) {
         cout << "Редактирование меню:\n";
-        cout << "1. Добавить блюдо\n";
-        cout << "2. Удалить блюдо\n";
-        cout << "3. Редактировать блюдо\n";
-        cout << "4. Вернуться в предыдущее меню\n";
+        cout << "1. Список блюд\n";
+        cout << "2. Добавить блюдо\n";
+        cout << "3. Удалить блюдо\n";
+        cout << "4. Редактировать блюдо\n";
+        cout << "5. Выход\n";
         cout << "Выберите действие: ";
         cin >> choice;
 
@@ -36,17 +37,22 @@ void Menu::editMenu() {
 
         switch (choice) {
         case 1:
+            listDishes();
+            break;
+        case 2:
             addDish();
             editMenu();
             break;
-        case 2:
+        case 3:
             removeDish();
             break;
-        case 3:
+        case 4:
             editDish();
             break;
-        case 4:
-            return;  // Выход из функции editMenu() и возврат к предыдущему меню
+        case 5:
+            system("cls");
+            return;  
+            break; // Выход из функции editMenu() и возврат к предыдущему меню
         default:
             cout << "Неправильный выбор. Попробуйте еще раз." << endl;
             system("cls");
@@ -347,6 +353,98 @@ void Menu::editDish()
     cout << "Запись успешно отредактирована!" << endl;
 
     system("pause");
+    system("cls");
+}
+
+void Menu::listDishes() {
+    JsonHelper jsonHelper;
+    system("cls");
+
+    // Загружаем данные из файла
+    json jsonData = jsonHelper.readJsonData("menu.json");
+
+    // Создаем вектор для хранения информации о блюдах
+    std::vector<Menu> dishes;
+
+    // Извлекаем данные о блюдах из JSON
+    for (const auto& dish : jsonData["menu"]) {
+        Menu currentDish;
+        currentDish.name = dish["name"];
+        currentDish.description = dish["description"];
+        currentDish.cookingTime = dish["cookingTime"];
+        currentDish.weight = dish["weight"];
+        currentDish.cost = dish["cost"];
+
+        // Извлекаем данные об ингредиентах
+        for (const auto& ingredient : dish["ingredients"]) {
+            Product currentIngredient;
+            currentIngredient.id = ingredient["id"];
+            currentIngredient.name = ingredient["name"];
+            currentIngredient.price = ingredient["price"];
+            currentDish.ingredients.push_back(currentIngredient);
+        }
+
+        dishes.push_back(currentDish);
+    }
+
+    // Определяем количество записей на странице
+    const int itemsPerPage = 5;
+    int totalPages = (dishes.size() + itemsPerPage - 1) / itemsPerPage; // Округление вверх
+
+    // Выводим список блюд с информацией
+    std::cout << "Список блюд:\n";
+    int startIndex = 0;
+    int currentPage = 1;
+
+    while (true) {
+        int endIndex = std::min(startIndex + itemsPerPage, static_cast<int>(dishes.size()));
+
+        for (int i = startIndex; i < endIndex; ++i) {
+            std::cout << "Название: " << dishes[i].name << std::endl;
+            std::cout << "Описание: " << dishes[i].description << std::endl;
+            std::cout << "Время приготовления: " << dishes[i].cookingTime << std::endl;
+            std::cout << "Вес: " << dishes[i].weight << std::endl;
+            std::cout << "Стоимость: " << dishes[i].cost << std::endl;
+
+            std::cout << "Ингредиенты:\n";
+            for (const auto& ingredient : dishes[i].ingredients) {
+                std::cout << "  - Название: " << ingredient.name << std::endl;
+                std::cout << "    Цена: " << ingredient.price << std::endl;
+            }
+
+            std::cout << "-----------------------\n";
+        }
+
+        // Проверяем, достигнута ли последняя страница
+        if (currentPage == totalPages) {
+            break;
+        }
+
+        // Запрашиваем у пользователя загрузку следующей страницы
+        std::cout << "Загрузить еще? (y/n): ";
+        std::string input;
+        std::cin >> input;
+
+        // Если пользователь не желает загружать следующую страницу, прекращаем пагинацию
+        if (input != "y") {
+            break;
+        }
+
+        // Увеличиваем индексы для перехода на следующую страницу
+        startIndex += itemsPerPage;
+        currentPage++;
+    }
+
+    int choice;
+    std::cout << "Введите любой символ для выхода: ";
+    std::cin >> choice;
+    switch (choice) {
+    default:
+        return;
+        break;
+    }
+
+    Sleep(1500);
     system("cls");
 }
 

@@ -7,12 +7,6 @@
 using namespace std;
 #define _CRT_SECURE_NO_WARNINGS
 
-void TrunkTxt() {
-    std::ofstream balanceFile;
-    balanceFile.open("RestBalance.txt", std::ofstream::out | std::ofstream::trunc);
-    balanceFile.close();
-}
-
 double getBalance() {
     std::ifstream balanceFile("RestBalance.txt");
     if (!balanceFile) {
@@ -267,7 +261,7 @@ void Order::ordersList() {
     }
 
     withdrawFunds(amount);
-    for (int i = Id; i < quantity; ++i) {
+    for (int i = 0; i < quantity; ++i) {
         productsData["products"].push_back({
             {"id", Id},
             {"name", choice},

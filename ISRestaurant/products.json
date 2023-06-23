@@ -8,12 +8,22 @@
         {
             "id": 2,
             "name": "ka",
-            "price": 0.0
+            "price": 20.0
+        },
+        {
+            "id": 2,
+            "name": "ka",
+            "price": 20.0
         },
         {
             "id": 3,
             "name": "potata",
             "price": 55.0
+        },
+        {
+            "id": 4,
+            "name": "svekla",
+            "price": 24.0
         },
         {
             "id": 4,
@@ -34,6 +44,31 @@
             "id": 7,
             "name": "milk",
             "price": 150.0
+        },
+        {
+            "id": 8,
+            "name": "carat",
+            "price": 45.0
+        },
+        {
+            "id": 8,
+            "name": "carat",
+            "price": 45.0
+        },
+        {
+            "id": 8,
+            "name": "carat",
+            "price": 45.0
+        },
+        {
+            "id": 8,
+            "name": "carat",
+            "price": 45.0
+        },
+        {
+            "id": 8,
+            "name": "carat",
+            "price": 45.0
         },
         {
             "id": 8,

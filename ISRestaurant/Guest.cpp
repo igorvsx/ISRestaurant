@@ -46,7 +46,7 @@ void Guest::createOrder() {
 
     //json& selectedDish = menuData["menu"][recordNumber - 1];
 
-    //Order guestOrder;
+    //GuestOrder guestOrder;
     //guestOrder.setDishName(selectedDish["name"].get<string>());
 
 

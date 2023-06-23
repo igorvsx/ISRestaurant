@@ -136,7 +136,6 @@ void registerUser() {
 
     std::string hashedPassword = hashPassword(password);
 
-
     // Создаем объект JSON для нового пользователя
     json user;
     user["role"] = role;
