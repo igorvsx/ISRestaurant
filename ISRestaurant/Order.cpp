@@ -104,7 +104,6 @@ void Order::createOrder() {
     newOrder["product_id"] = productId;
     newOrder["product_name"] = selectedProduct["name"];
     newOrder["quantity"] = quantity;
-
     newOrder["send_time"] = sendTime;
 
     // Добавление новой заявки в список
@@ -311,4 +310,36 @@ void Order::ordersList() {
 
     system("pause");
     system("cls");
+}
+
+void Order::printAcceptOrders() {
+    system("cls");
+    JsonHelper jsonHelper;
+
+
+    // Чтение данных из файла "DoneOrders.json"
+    json doneOrderData = jsonHelper.readJsonData("DoneOrders.json");
+
+    // Проверка наличия заявок
+    if (doneOrderData["DoneOrders"].empty()) {
+        std::cout << "Список принятых продуктов пуст." << std::endl;
+        return;
+    }
+
+    // Вывод списка отправленных заявок
+    std::cout << "Список принятых продуктов:" << std::endl;
+    for (const auto& doneOrder : doneOrderData["DoneOrders"]) {
+        cout << "Дата: " << doneOrder["date_executed"] << endl;
+        cout << "ID продукта: " << doneOrder["product_id"] << endl;
+        cout << "Название продукта: " << doneOrder["product_name"] << endl;
+        std::cout << "Количество: " << doneOrder["quantity"] << std::endl;
+        std::cout << "-----------------------" << std::endl;
+    }
+    int choice;
+    std::cout << "Введите любой символ для выхода: ";
+    std::cin >> choice;
+    switch (choice) {
+    default:
+        return;
+    }
 }

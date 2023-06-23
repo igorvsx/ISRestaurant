@@ -9,4 +9,5 @@ public:
     void withdrawFunds(double amount);
     void printSendOrders();
     void ordersList();
+    void printAcceptOrders();
 };

@@ -21,5 +21,5 @@ public:
     void editingEmployees();
     void supplierMenu();
     void accountantMenu();
-    
+    void printBalance(const std::string& filename);
 };

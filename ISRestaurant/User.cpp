@@ -241,6 +241,36 @@ void User::removeEmployees()
     }
 }
 
+void User::printBalance(const std::string& filename) {
+    system("cls");
+
+    std::ifstream inputFile(filename);
+    if (inputFile.is_open()) {
+        std::string balanceStr;
+        std::getline(inputFile, balanceStr); // Читаем строку с балансом из файла
+
+        try {
+            double balance = std::stod(balanceStr); // Преобразуем строку в число (тип double)
+            std::cout << "Баланс: " << balance << std::endl;
+        }
+        catch (const std::exception& e) {
+            std::cout << "Ошибка при чтении баланса из файла: " << e.what() << std::endl;
+        }
+
+        inputFile.close();
+    }
+    else {
+        std::cout << "Не удалось открыть файл: " << filename << std::endl;
+    }
+
+    int choice;
+    std::cout << "Введите любой символ для выхода: ";
+    std::cin >> choice;
+    switch (choice) {
+    default:
+        return;
+    }
+}
 
 void User::guestMenu() {
     cout << "Меню гостя" << endl;
@@ -387,8 +417,10 @@ void User::accountantMenu() {
             order.printSendOrders();
             break;
         case 2:
+            order.printAcceptOrders();
             break;
         case 3:
+            printBalance("RestBalance.txt");
             break;
         case 4:
             return;
@@ -399,6 +431,7 @@ void User::accountantMenu() {
         }
     }
 }
+
 
 
 
