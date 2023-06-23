@@ -12,7 +12,6 @@ struct MenuItem {
     double cost;
 };
 
-
 void Guest::displayCart() {
     JsonHelper jsonHelper;
     system("cls");
@@ -49,7 +48,6 @@ void Guest::displayCart() {
     std::cin >> choice;
     system("cls");
 }
-
 
 void Guest::createOrder() {
     JsonHelper jsonHelper;
@@ -243,7 +241,6 @@ void Guest::confirmOrder() {
     Sleep(1500);
     system("cls");
 }
-
 
 void Guest::displayStatus(){
     JsonHelper jsonHelper;
