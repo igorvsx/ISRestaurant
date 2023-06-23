@@ -16,7 +16,7 @@ void JsonHelper::writeJsonData(const std::string& filename, const json& jsonData
         if (outputFile.is_open()) {
             outputFile << std::setw(4) << jsonData << std::endl;
             outputFile.close();
-            std::cout << "Данные успешно сохранены в файл: " << filename << std::endl;
+            //std::cout << "Данные успешно сохранены в файл: " << filename << std::endl;
         }
         else {
             std::cout << "Не удалось открыть файл: " << filename << std::endl;

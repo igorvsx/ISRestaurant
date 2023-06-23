@@ -6,7 +6,7 @@
 class Order {
 public:
     void createOrder();
-    void displayOrders();
     void withdrawFunds(double amount);
     void printSendOrders();
+    void ordersList();
 };

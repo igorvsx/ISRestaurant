@@ -329,6 +329,7 @@ void User::skladMenu() {
 }
 
 void User::supplierMenu() {
+    Order order;
     system("cls");
     int choice;
 
@@ -348,7 +349,7 @@ void User::supplierMenu() {
 
         switch (choice) {
         case 1:
-            ordersList();
+            order.ordersList();
             break;
         case 2:
             return;
@@ -399,142 +400,9 @@ void User::accountantMenu() {
     }
 }
 
-std::string getCurrentDate() {
-    std::time_t currentTime = std::time(nullptr);
-    std::tm localTime;
-    localtime_s(&localTime, &currentTime);
-
-    char buffer[80];
-    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d", &localTime);
-
-    return std::string(buffer);
-}
 
 
-void User::ordersList() {
-    JsonHelper jsonHelper;
-    Order order;
-    system("cls");
-
-    // Загрузка данных из JSON-файла
-    json orderData = jsonHelper.readJsonData("orders.json");
-    json productsData = jsonHelper.readJsonData("products.json");
-    json existingData = jsonHelper.readJsonData("DoneOrders.json");
-
-    // Проверка наличия заявок
-    if (orderData["orders"].empty()) {
-        cout << "Список заявок пуст." << endl;
-        Sleep(1500);
-        system("cls");
-        return;
-    }
-
-    
-    // Вывод списка заявок
-    for (const auto& orderItem : orderData["orders"]) {
-        int productId = orderItem["product_id"].get<int>();
-        int quantityPro = orderItem["quantity"].get<int>();
-
-        std::cout << "Наименование: " << orderItem["product_name"] << std::endl;
-        //std::cout << "Цена за штуку: " << orderItem["price"] << std::endl;
-        std::cout << "Количество: " << quantityPro << std::endl;
-        //std::cout << "Общая стоимость: " << orderItem["price"] * quantityPro << std::endl;
-        std::cout << "-----------------------\n";
-
-        // Получаем информацию о продукте по ID из файла "products.json"
-        /*json productData = jsonHelper.getProductData(productId);
-        if (!productData.empty()) {
-           
-        }*/
-    }
-
-    string choice;
-    double price = 0;
-    int quantity = 0;
-    double amount = 0;
-
-    cout << "Введите название продукта для отправки: ";
-    cin >> choice;
-
-    
-    for (const auto& product : productsData["products"]) {
-        if (product["name"] == choice) {
-            price = product["price"].get<std::double_t>();
-            break;
-        }
-    }
-
-    for (const auto& order : orderData["orders"]) {
-        if (order["product_name"] == choice) {
-            quantity = order["quantity"].get<std::int16_t>();
-            break;
-        }
-    }
-
-    amount = price * quantity;
-
-    //получаем максимальный id
-    int Id = 0;
-
-    // Поиск максимального значения ID
-    for (const auto& product : productsData["products"]) {
-        if (product["name"] == choice) {
-            Id = product["id"].get<int>();
-        }
-    }
-
-    // Проверка наличия выбранной заявки
-    if (choice.empty()) {
-        cout << "Заявка с указанным ID не найдена." << endl;
-        system("pause");
-        system("cls");
-        return;
-    }
-
-    order.withdrawFunds(amount);
-    for (int i = Id; i < quantity; ++i) {
-        productsData["products"].push_back({
-            {"id", Id},
-            {"name", choice},
-            {"price", price}
-            });
-    }
-
-    // Сохранение обновленных данных в файле
-    jsonHelper.writeJsonData("products.json", productsData);
-
-    // Поиск и удаление выбранной заявки
-    json updatedOrderData;
-    for (const auto& order : orderData["orders"]) {
-        if (!(order["product_name"] == choice && order["quantity"].get<int>() == quantity)) {
-            updatedOrderData.push_back(order);
-        }
-        else {
-            // Заявка выполнена, создаем JSON-объект с информацией о выполненной заявке
-            json doneOrderData = {
-                {"product_id", order["product_id"]},
-                {"product_name", order["product_name"]},
-                {"quantity", order["quantity"]},
-                {"date_executed", getCurrentDate()} // Здесь getCurrentDate() - метод для получения текущей даты
-            };
-
-            // Добавляем выполненную заявку в файл "DoneOrders.json"
-            existingData["DoneOrders"].push_back(doneOrderData);
-            jsonHelper.writeJsonData("DoneOrders.json", existingData);
-        }
-    }
-
-    // Замена старых данных новыми данными
-    orderData["orders"] = updatedOrderData;
 
 
-    // Сохранение обновленных данных в JSON-файл
-    jsonHelper.writeJsonData("orders.json", orderData);
-
-    cout << "Заявка успешно обработана!" << endl;
-
-    system("pause");
-    system("cls");
-}
 
 
