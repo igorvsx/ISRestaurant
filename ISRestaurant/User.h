@@ -19,7 +19,9 @@ public:
     void addEmployees();
     void removeEmployees();
     void editingEmployees();
+    void listEmployees();
     void supplierMenu();
     void accountantMenu();
     void printBalance(const std::string& filename);
+    void makeOrder();
 };

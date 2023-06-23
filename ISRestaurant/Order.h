@@ -10,4 +10,6 @@ public:
     void printSendOrders();
     void ordersList();
     void printAcceptOrders();
+    void setDishName(const std::string& dishName);
+    void addItem(const std::string& itemName, int quantity);
 };

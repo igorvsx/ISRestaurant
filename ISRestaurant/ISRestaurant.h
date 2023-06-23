@@ -9,3 +9,6 @@
 #include <iomanip>
 #define NOMINMAX
 #include <windows.h>
+using namespace std;
+
+string hashPassword(const std::string& password);

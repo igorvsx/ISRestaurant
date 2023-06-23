@@ -232,7 +232,7 @@ int main()
         case 3:
             loggedIn = true;
             role = "Гость";
-            cout << "Вход выполнен как гость" << endl;
+            user.guestMenu();
             break;
         case 4:
             return 0;

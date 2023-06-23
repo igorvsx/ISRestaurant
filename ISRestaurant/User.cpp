@@ -2,6 +2,7 @@
 #include "Product.h"
 #include "Menu.h"
 #include "User.h"
+#include "ISRestaurant.h"
 #include <iostream>
 #include <fstream>
 #include <ctime>
@@ -14,6 +15,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include "Order.h"
+#include "Guest.h"
 
 using namespace std;
 
@@ -25,31 +27,36 @@ void User::editingEmployees() {
 
     while (true) {
         cout << "Редактирование учетных записей:\n";
-        cout << "1. Добавить\n";
-        cout << "2. Изменить\n";
-        cout << "3. Удалить\n";
-        cout << "4. Выход\n";
+        cout << "1. Список учетных записей\n";
+        cout << "2. Добавить\n";
+        cout << "3. Изменить\n";
+        cout << "4. Удалить\n";
+        cout << "5. Выход\n";
         cout << "Выберите действие: ";
         cin >> choice;
 
         if (cin.fail()) {
             cout << "Неправильный выбор. Попробуйте еще раз." << endl;
             cin.clear();
+            system("cls");
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             continue;
         }
 
         switch (choice) {
         case 1:
-            addEmployees();
+            listEmployees();
             break;
         case 2:
-            editEmployees();
+            addEmployees();
             break;
         case 3:
-            removeEmployees();
+            editEmployees();
             break;
         case 4:
+            removeEmployees();
+            break;
+        case 5:
             system("cls");
             return;  
         default:
@@ -87,6 +94,8 @@ void User::addEmployees()
     std::cout << "Пароль: ";
     std::getline(std::cin, password);
 
+    string newHashedPass = hashPassword(password);
+
     std::cout << "Роль: ";
     std::getline(std::cin, role);
 
@@ -96,7 +105,7 @@ void User::addEmployees()
     newEmployee["lastName"] = lastName;
     newEmployee["patronymic"] = patronymic;
     newEmployee["username"] = username;
-    newEmployee["password"] = password;
+    newEmployee["password"] = newHashedPass;
     newEmployee["role"] = role;
 
     // Добавление нового сотрудника в список
@@ -112,6 +121,7 @@ void User::addEmployees()
 void User::editEmployees()
 {
     JsonHelper jsonHelper;
+    
     system("cls");
     // Загружаем данные из файла
     json jsonData = jsonHelper.readJsonData("users.json");
@@ -164,7 +174,10 @@ void User::editEmployees()
             // Редактирование пароля
             std::cout << "Новый пароль: ";
             std::getline(std::cin, newPassword);
-            user["password"] = newPassword;
+
+            string newHashedPass = hashPassword(newPassword);
+
+            user["password"] = newHashedPass;
 
             // Редактирование роли
             std::cout << "Новая роль: ";
@@ -240,6 +253,87 @@ void User::removeEmployees()
         system("cls");
     }
 }
+void User::listEmployees() {
+    JsonHelper jsonHelper;
+    system("cls");
+
+    // Загружаем данные из файла
+    json jsonData = jsonHelper.readJsonData("users.json");
+
+    // Создаем вектор для хранения информации о пользователях
+    std::vector<User> users;
+
+    // Извлекаем данные о пользователях из JSON
+    for (const auto& user : jsonData["users"]) {
+        User currentUser;
+        currentUser.firstName = user["firstName"];
+        currentUser.lastName = user["lastName"];
+        currentUser.password = user["password"];
+        currentUser.patronymic = user["patronymic"];
+        currentUser.role = user["role"];
+        currentUser.username = user["username"];
+        users.push_back(currentUser);
+    }
+
+    // Определяем количество записей на странице
+    const int itemsPerPage = 5;
+    int totalPages = (users.size() + itemsPerPage - 1) / itemsPerPage; // Округление вверх
+
+    // Выводим список пользователей с информацией
+    std::cout << "Список пользователей:\n";
+    int startIndex = 0;
+    int currentPage = 1;
+
+    while (true) {
+        int endIndex = std::min(startIndex + itemsPerPage, static_cast<int>(users.size()));
+
+        for (int i = startIndex; i < endIndex; ++i) {
+            std::cout << "Имя: " << users[i].firstName << std::endl;
+            std::cout << "Фамилия: " << users[i].lastName << std::endl;
+            std::cout << "Отчество: " << users[i].patronymic << std::endl;
+            std::cout << "Роль: " << users[i].role << std::endl;
+            std::cout << "Имя пользователя: " << users[i].username << std::endl;
+            std::cout << "-----------------------\n";
+        }
+
+        // Проверяем, является ли текущая страница последней
+        bool isLastPage = currentPage == totalPages;
+
+        // Если текущая страница последняя, прекращаем пагинацию
+        if (isLastPage) {
+            std::cout << "Это последняя страница. Нет доступных записей для загрузки.\n";
+            break;
+        }
+
+        // Просим пользователя загрузить следующую страницу
+        std::cout << "Введите 'y' для загрузки следующей страницы, или любой другой символ для выхода: ";
+        std::string input;
+        std::cin >> input;
+
+        // Если пользователь не желает загружать следующую страницу, прекращаем пагинацию
+        if (input != "y") {
+            system("cls");
+            return;
+        }
+
+        // Увеличиваем индексы для перехода на следующую страницу
+        startIndex += itemsPerPage;
+        currentPage++;
+    }
+
+    int choice;
+    std::cout << "Введите любой символ для выхода: ";
+    std::cin >> choice;
+    switch (choice) {
+    default:
+        return;
+        break;
+    }
+
+    Sleep(1500);
+    system("cls");
+}
+
 
 void User::printBalance(const std::string& filename) {
     system("cls");
@@ -272,9 +366,43 @@ void User::printBalance(const std::string& filename) {
     }
 }
 
+void User::makeOrder() {
+
+}
+
 void User::guestMenu() {
-    cout << "Меню гостя" << endl;
-    // Добавьте функциональность для меню гостя
+
+    system("cls");
+    int choice;
+    Menu menu;
+    Product product;
+    Guest guest;
+
+    while (true) {
+        cout << "1. Сделать заказ\n";
+        cout << "2. Выход\n";
+        cout << "Выберите действие: ";
+        cin >> choice;
+
+        if (cin.fail()) {
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
+        }
+
+        switch (choice) {
+        case 1:
+            guest.createOrder();
+            break;
+        case 2:
+            system("cls");
+            return;
+        default:
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            break;
+        }
+    }
 }
 
 void User::adminMenu() {

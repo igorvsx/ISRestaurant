@@ -10,6 +10,7 @@
 #include <iomanip>
 #define NOMINMAX
 #include <windows.h>
+#include <set>
 
 using namespace std;
 
@@ -52,6 +53,8 @@ void Product::addProduct() {
     // Сохраняем обновленные данные в файл JSON
     jsonHelper.writeJsonData("products.json", jsonData);
 
+    cout << "Продукт успешно добавлен";
+
     Sleep(1500);
     system("cls");
 }
@@ -65,11 +68,41 @@ void Product::editProduct() {
 
     // Выводим список продуктов
     std::cout << "Список продуктов:\n";
-    for (const auto& product : jsonData["products"]) {
-        std::cout << "ID: " << product["id"] << std::endl;
-        std::cout << "Наименование: " << product["name"] << std::endl;
-        std::cout << "Цена: " << product["price"] << std::endl;
-        std::cout << "-----------------------\n";
+    int offset = 0;
+    int pageSize = 5;
+    int totalCount = jsonData["products"].size();
+    std::set<int> displayedIDs; // Множество для отслеживания уже выведенных ID
+
+    while (offset < totalCount) {
+        // Выводим текущую страницу продуктов
+        for (int i = offset; i < std::min(offset + pageSize, totalCount); ++i) {
+            const auto& product = jsonData["products"][i];
+            int productID = product["id"].get<int>();
+
+            // Проверяем, был ли уже выведен продукт с таким ID
+            if (displayedIDs.find(productID) != displayedIDs.end()) {
+                continue; // Продукт уже был выведен, переходим к следующему
+            }
+
+            displayedIDs.insert(productID); // Добавляем ID в множество выведенных продуктов
+
+            std::cout << "ID: " << productID << std::endl;
+            std::cout << "Наименование: " << product["name"] << std::endl;
+            std::cout << "Цена: " << product["price"] << std::endl;
+            std::cout << "-----------------------\n";
+        }
+
+        // Запрашиваем подтверждение загрузки еще записей
+        if (offset + pageSize < totalCount) {
+            std::string input;
+            std::cout << "Загрузить еще? (y/n): ";
+            std::cin >> input;
+
+            if (input != "y")
+                break;
+        }
+
+        offset += pageSize;
     }
 
     // Получаем ID продукта, который нужно отредактировать
@@ -118,14 +151,53 @@ void Product::removeProduct() {
     // Загружаем данные из файла
     json jsonData = jsonHelper.readJsonData("products.json");
 
-    // Выводим список продуктов
     std::cout << "Список продуктов:\n";
-    for (const auto& product : jsonData["products"]) {
-        std::cout << "ID: " << product["id"] << std::endl;
-        std::cout << "Наименование: " << product["name"] << std::endl;
-        std::cout << "Цена: " << product["price"] << std::endl;
-        std::cout << "-----------------------\n";
+    int offset = 0;
+    int pageSize = 5;
+    int totalCount = jsonData["products"].size();
+    std::set<int> displayedIDs; // Множество для отслеживания уже выведенных ID
+
+    while (offset < totalCount) {
+        // Выводим текущую страницу продуктов
+        for (int i = offset; i < std::min(offset + pageSize, totalCount); ++i) {
+            const auto& product = jsonData["products"][i];
+            int productID = product["id"].get<int>();
+
+            // Проверяем, был ли уже выведен продукт с таким ID
+            if (displayedIDs.find(productID) != displayedIDs.end()) {
+                continue; // Продукт уже был выведен, переходим к следующему
+            }
+
+            displayedIDs.insert(productID); // Добавляем ID в множество выведенных продуктов
+
+            std::cout << "ID: " << productID << std::endl;
+            std::cout << "Наименование: " << product["name"] << std::endl;
+            std::cout << "Цена: " << product["price"] << std::endl;
+            std::cout << "-----------------------\n";
+        }
+
+        // Запрашиваем подтверждение загрузки еще записей
+        if (offset + pageSize < totalCount) {
+            std::string input;
+            std::cout << "Загрузить еще? (y/n): ";
+            std::cin >> input;
+
+            if (input != "y")
+                break;
+        }
+
+        offset += pageSize;
     }
+
+
+    //// Выводим список продуктов
+    //std::cout << "Список продуктов:\n";
+    //for (const auto& product : jsonData["products"]) {
+    //    std::cout << "ID: " << product["id"] << std::endl;
+    //    std::cout << "Наименование: " << product["name"] << std::endl;
+    //    std::cout << "Цена: " << product["price"] << std::endl;
+    //    std::cout << "-----------------------\n";
+    //}
 
     // Получаем ID продукта, который нужно удалить
     int productId;
@@ -162,31 +234,40 @@ void Product::editingProducts() {
 
     while (true) {
         cout << "Редактирование продуктов:\n";
-        cout << "1. Добавить\n";
-        cout << "2. Изменить\n";
-        cout << "3. Удалить\n";
-        cout << "4. Выход\n";
+        cout << "1. Список продуктов\n";
+        cout << "2. Добавить\n";
+        cout << "3. Изменить\n";
+        cout << "4. Удалить\n";
+        cout << "5. Выход\n";
         cout << "Выберите действие: ";
         cin >> choice;
 
         if (cin.fail()) {
             cout << "Неправильный выбор. Попробуйте еще раз." << endl;
             cin.clear();
+            system("cls");
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             continue;
         }
 
         switch (choice) {
         case 1:
-            addProduct();
+            system("cls");
+            productList();
             break;
         case 2:
-            editProduct();
+            system("cls");
+            addProduct();
             break;
         case 3:
-            removeProduct();
+            system("cls");
+            editProduct();
             break;
         case 4:
+            system("cls");
+            removeProduct();
+            break;
+        case 5:
             system("cls");
             return;
         default:
@@ -221,21 +302,67 @@ void Product::productList() {
         }
     }
 
-    // Выводим список продуктов с информацией
-    std::cout << "Список продуктов:\n";
+    // Преобразуем информацию о продуктах в список уникальных продуктов
+    std::vector<std::tuple<int, std::string, int, double, double>> uniqueProducts;
     for (const auto& item : productInfo) {
         int id = item.first;
         std::string name = std::get<0>(item.second);
         int quantity = std::get<1>(item.second);
         double totalCost = std::get<2>(item.second);
         double costPerUnit = std::get<3>(item.second);
+        uniqueProducts.push_back(std::make_tuple(id, name, quantity, totalCost, costPerUnit));
+    }
 
-        std::cout << "ID: " << id << std::endl;
-        std::cout << "Наименование: " << name << std::endl;
-        std::cout << "Количество: " << quantity << std::endl;
-        std::cout << "Общая стоимость: " << totalCost << std::endl;
-        std::cout << "Цена за 1 штуку: " << costPerUnit << std::endl;
-        std::cout << "-----------------------\n";
+    // Определяем количество записей на странице
+    const int itemsPerPage = 5;
+    int totalPages = (uniqueProducts.size() + itemsPerPage - 1) / itemsPerPage; // Округление вверх
+
+    // Выводим список продуктов с информацией
+    std::cout << "Список продуктов:\n";
+    int startIndex = 0;
+    int currentPage = 1;
+
+    while (true) {
+        int endIndex = std::min(startIndex + itemsPerPage, static_cast<int>(uniqueProducts.size()));
+
+        for (int i = startIndex; i < endIndex; ++i) {
+            int id = std::get<0>(uniqueProducts[i]);
+            std::string name = std::get<1>(uniqueProducts[i]);
+            int quantity = std::get<2>(uniqueProducts[i]);
+            double totalCost = std::get<3>(uniqueProducts[i]);
+            double costPerUnit = std::get<4>(uniqueProducts[i]);
+
+            std::cout << "ID: " << id << std::endl;
+            std::cout << "Наименование: " << name << std::endl;
+            std::cout << "Количество: " << quantity << std::endl;
+            std::cout << "Общая стоимость: " << totalCost << std::endl;
+            std::cout << "Цена за 1 штуку: " << costPerUnit << std::endl;
+            std::cout << "-----------------------\n";
+        }
+
+        // Проверяем, является ли текущая страница последней
+        bool isLastPage = currentPage == totalPages;
+
+        // Если текущая страница последняя, прекращаем пагинацию
+        if (isLastPage) {
+            std::cout << "Это последняя страница. Нет доступных записей для загрузки.\n";
+            break;
+        }
+
+        // Просим пользователя загрузить следующую страницу
+        std::cout << "Введите 'y' для загрузки следующей страницы, или любой другой символ для выхода: ";
+        std::string input;
+        std::cin >> input;
+
+        // Если пользователь не желает загружать следующую страницу, прекращаем пагинацию
+        if (input != "y") {
+            system("cls");
+            return;
+        }
+
+        // Увеличиваем индексы для перехода на следующую страницу
+        startIndex += itemsPerPage;
+        currentPage++;
     }
 
     int choice;
@@ -250,3 +377,4 @@ void Product::productList() {
     Sleep(1500);
     system("cls");
 }
+

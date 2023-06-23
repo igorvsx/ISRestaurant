@@ -7,42 +7,37 @@
         },
         {
             "id": 2,
-            "name": "tomato",
-            "price": 45.0
+            "name": "ka",
+            "price": 0.0
         },
         {
-            "id": 2,
-            "name": "tomato",
-            "price": 45.0
+            "id": 3,
+            "name": "potata",
+            "price": 55.0
         },
         {
-            "id": 2,
-            "name": "tomato",
-            "price": 45.0
+            "id": 4,
+            "name": "svekla",
+            "price": 24.0
         },
         {
-            "id": 2,
-            "name": "tomato",
-            "price": 45.0
+            "id": 5,
+            "name": "chese",
+            "price": 89.0
         },
         {
-            "id": 2,
-            "name": "tomato",
-            "price": 45.0
+            "id": 6,
+            "name": "onion",
+            "price": 10.0
         },
         {
-            "id": 2,
-            "name": "tomato",
-            "price": 45.0
+            "id": 7,
+            "name": "milk",
+            "price": 150.0
         },
         {
-            "id": 2,
-            "name": "tomato",
-            "price": 45.0
-        },
-        {
-            "id": 2,
-            "name": "tomato",
+            "id": 8,
+            "name": "carat",
             "price": 45.0
         }
     ]
