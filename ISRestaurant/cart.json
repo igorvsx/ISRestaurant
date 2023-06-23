@@ -1,0 +1,24 @@
+{
+    "cart": [
+        {
+            "cost": 2555.0,
+            "name": "test",
+            "status": "Cooking in the kitchen"
+        },
+        {
+            "cost": 600.0,
+            "name": "grecha",
+            "status": "Cooking in the kitchen"
+        },
+        {
+            "cost": 525.0,
+            "name": "plov",
+            "status": "Cooking in the kitchen"
+        },
+        {
+            "cost": 600.0,
+            "name": "grecha",
+            "status": "Handed over to the waiter for delivery"
+        }
+    ]
+}

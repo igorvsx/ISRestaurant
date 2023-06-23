@@ -263,6 +263,10 @@ int main()
                 user.accountantMenu();
                 system("cls");
             }
+            else if (role == "Chef") {
+                user.povarMenu();
+                system("cls");
+            }
             else {
                 break; // Выход из цикла, если роль неизвестна или не имеет меню
             }

@@ -334,6 +334,160 @@ void User::listEmployees() {
     system("cls");
 }
 
+void User::displayPaidOrdersForCook() {
+    JsonHelper jsonHelper;
+    system("cls");
+
+    // Загрузка данных из JSON-файла
+    json cartData = jsonHelper.readJsonData("cart.json");
+
+    // Проверка наличия записей в корзине
+    if (cartData["cart"].empty()) {
+        cout << "Нет заказов." << endl;
+        Sleep(1500);
+        system("cls");
+        return;
+    }
+
+    // Вывод заказов со статусом "Paid for and transferred to the kitchen"
+    cout << "Заказы, доступные для приготовления:\n";
+    bool foundOrders = false;
+    for (size_t i = 0; i < cartData["cart"].size(); ++i) {
+        if (cartData["cart"][i]["status"] == "Paid for and transferred to the kitchen") {
+            cout << "Заказ номер " << i + 1 << ":\n";
+            cout << "Название: " << cartData["cart"][i]["name"].get<string>() << endl;
+            cout << "Цена: " << cartData["cart"][i]["cost"].get<double>() << " рублей" << endl;
+            cout << "--------------------------\n";
+            foundOrders = true;
+        }
+    }
+
+    if (!foundOrders) {
+        cout << "Нет доступных заказов." << endl;
+    }
+
+    int choice;
+    std::cout << "Введите любой символ для выхода: ";
+    std::cin >> choice;
+    system("cls");
+}
+
+void User::startCooking() {
+    JsonHelper jsonHelper;
+    system("cls");
+
+    // Загрузка данных из JSON-файлов
+    json cartData = jsonHelper.readJsonData("cart.json");
+    json menuData = jsonHelper.readJsonData("menu.json");
+    json productsData = jsonHelper.readJsonData("products.json");
+
+    // Проверка наличия записей в корзине
+    if (cartData["cart"].empty()) {
+        cout << "Нет заказов." << endl;
+        Sleep(1500);
+        system("cls");
+        return;
+    }
+
+    // Вывод заказов со статусом "Paid for and transferred to the kitchen"
+    cout << "Заказы со статусом 'Paid for and transferred to the kitchen':\n";
+    bool foundOrders = false;
+    for (size_t i = 0; i < cartData["cart"].size(); ++i) {
+        if (cartData["cart"][i]["status"] == "Paid for and transferred to the kitchen") {
+            cout << "Заказ номер " << i + 1 << ":\n";
+            cout << "Название: " << cartData["cart"][i]["name"].get<string>() << endl;
+            cout << "Цена: " << cartData["cart"][i]["cost"].get<double>() << " рублей" << endl;
+            cout << "--------------------------\n";
+            foundOrders = true;
+        }
+    }
+
+    if (!foundOrders) {
+        cout << "Нет заказов со статусом 'Paid for and transferred to the kitchen'." << endl;
+        Sleep(1500);
+        system("cls");
+        return;
+    }
+
+    int orderNumber;
+    cout << "Введите номер заказа для начала приготовления: ";
+    cin >> orderNumber;
+
+    if (orderNumber <= 0 || orderNumber > cartData["cart"].size()) {
+        cout << "Введен некорректный номер заказа." << endl;
+        system("pause");
+        system("cls");
+        return;
+    }
+
+    // Получение имени блюда из заказа
+    string dishName = cartData["cart"][orderNumber - 1]["name"].get<string>();
+
+    // Поиск блюда в меню
+    json dishData;
+    for (const auto& item : menuData["menu"]) {
+        if (item["name"] == dishName) {
+            dishData = item;
+            break;
+        }
+    }
+
+    if (dishData.empty()) {
+        cout << "Нет информации о блюде в меню." << endl;
+        system("pause");
+        system("cls");
+        return;
+    }
+
+    // Получение списка ингредиентов для приготовления блюда
+    vector<string> ingredientNames;
+    for (const auto& ingredient : dishData["ingredients"]) {
+        ingredientNames.push_back(ingredient["name"].get<string>());
+    }
+
+    // Вывод списка ингредиентов для приготовления блюда
+    cout << "Ингредиенты для приготовления блюда '" << dishName << "':\n";
+    for (const auto& ingredientName : ingredientNames) {
+        cout << "- " << ingredientName << endl;
+    }
+    cout << "--------------------------\n";
+
+    // Ввод и удаление продуктов для приготовления
+    for (const auto& ingredientName : ingredientNames) {
+        string productName;
+        cout << "Введите продукт для приготовления: ";
+        cin >> productName;
+
+        bool foundProduct = false;
+        for (size_t i = 0; i < productsData["products"].size(); ++i) {
+            if (productsData["products"][i]["name"] == productName) {
+                productsData["products"].erase(productsData["products"].begin() + i);
+                foundProduct = true;
+                break;
+            }
+        }
+        if (!foundProduct) {
+            cout << "Продукт '" << productName << "' отсутствует в списке продуктов." << endl;
+            system("pause");
+            system("cls");
+            return;
+        }
+    }
+
+    // Изменение статуса заказа на "Cooking in the kitchen"
+    cartData["cart"][orderNumber - 1]["status"] = "Handed over to the waiter for delivery";
+
+    // Сохранение изменений в JSON-файлах
+    jsonHelper.writeJsonData("cart.json", cartData);
+    jsonHelper.writeJsonData("products.json", productsData);
+
+    cout << "Приготовление блюда '" << dishName << "' закончено." << endl;
+
+
+    system("pause");
+    system("cls");
+}
+
 
 void User::printBalance(const std::string& filename) {
     system("cls");
@@ -380,13 +534,17 @@ void User::guestMenu() {
 
     while (true) {
         cout << "1. Сделать заказ\n";
-        cout << "2. Выход\n";
+        cout << "2. Корзина\n";
+        cout << "3. Оплатить заказ\n";
+        cout << "4. Узнать статус заказов\n";
+        cout << "5. Выход\n";
         cout << "Выберите действие: ";
         cin >> choice;
 
         if (cin.fail()) {
             cout << "Неправильный выбор. Попробуйте еще раз." << endl;
             cin.clear();
+            system("cls");
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             continue;
         }
@@ -396,6 +554,15 @@ void User::guestMenu() {
             guest.createOrder();
             break;
         case 2:
+            guest.displayCart();
+            break;
+        case 3:
+            guest.confirmOrder();
+            break;
+        case 4:
+            guest.displayStatus();
+            break;
+        case 5:
             system("cls");
             return;
         default:
@@ -551,6 +718,43 @@ void User::accountantMenu() {
             printBalance("RestBalance.txt");
             break;
         case 4:
+            return;
+        default:
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            system("cls");
+            break;
+        }
+    }
+}
+
+void User::povarMenu() {
+    
+    system("cls");
+    int choice;
+
+    while (true) {
+        cout << "1. Список заказов\n";
+        cout << "2. Начать готовить\n";
+        cout << "3. Выход\n";
+        cout << "Выберите действие: ";
+        cin >> choice;
+
+        if (cin.fail()) {
+            cout << "Неправильный выбор. Попробуйте еще раз." << endl;
+            cin.clear();
+            system("cls");
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
+        }
+
+        switch (choice) {
+        case 1:
+            displayPaidOrdersForCook();
+            break;
+        case 2:
+            startCooking();
+            break;
+        case 3:
             return;
         default:
             cout << "Неправильный выбор. Попробуйте еще раз." << endl;

@@ -15,13 +15,19 @@ public:
     void guestMenu();
     void skladMenu();
     void adminMenu();
+    void povarMenu();
+    void supplierMenu();
+    void accountantMenu();
+
     void editEmployees();
     void addEmployees();
     void removeEmployees();
     void editingEmployees();
     void listEmployees();
-    void supplierMenu();
-    void accountantMenu();
+    
     void printBalance(const std::string& filename);
     void makeOrder();
+
+    void displayPaidOrdersForCook();
+    void startCooking();
 };
