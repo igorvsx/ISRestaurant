@@ -199,22 +199,50 @@ void Order::ordersList() {
     }
 
 
-    // Вывод списка заявок
-    for (const auto& orderItem : orderData["orders"]) {
-        int productId = orderItem["product_id"].get<int>();
-        int quantityPro = orderItem["quantity"].get<int>();
+    // Определяем количество записей на странице
+    const int itemsPerPage = 5;
+    int totalPages = (orderData["orders"].size() + itemsPerPage - 1) / itemsPerPage; // Округление вверх
 
-        std::cout << "Наименование: " << orderItem["product_name"] << std::endl;
-        //std::cout << "Цена за штуку: " << orderItem["price"] << std::endl;
-        std::cout << "Количество: " << quantityPro << std::endl;
-        //std::cout << "Общая стоимость: " << orderItem["price"] * quantityPro << std::endl;
-        std::cout << "-----------------------\n";
+    // Выводим список заявок с информацией
+    std::cout << "Список заявок:\n";
+    int startIndex = 0;
+    int currentPage = 1;
+    while (true) {
+        int endIndex = startIndex + itemsPerPage;
+        if (endIndex > orderData["orders"].size()) {
+            endIndex = orderData["orders"].size();
+        }
 
-        // Получаем информацию о продукте по ID из файла "products.json"
-        /*json productData = jsonHelper.getProductData(productId);
-        if (!productData.empty()) {
+        for (int i = startIndex; i < endIndex; ++i) {
+            int productId = orderData["orders"][i]["product_id"].get<int>();
+            int quantityPro = orderData["orders"][i]["quantity"].get<int>();
 
-        }*/
+            std::cout << "Наименование: " << orderData["orders"][i]["product_name"] << std::endl;
+            std::cout << "Количество: " << quantityPro << std::endl;
+            std::cout << "-----------------------\n";
+        }
+
+        bool isLastPage = currentPage == totalPages;
+
+        // Проверяем, достигнута ли последняя страница
+        if (isLastPage) {
+            std::cout << "Это последняя страница. Нет доступных записей для загрузки.\n";
+            break;
+        }
+
+        // Запрашиваем у пользователя загрузку следующей страницы
+        std::cout << "Введите 'y' для загрузки следующей страницы, или любой другой символ для выхода: ";
+        std::string input;
+        std::cin >> input;
+
+        // Если пользователь не желает загружать следующую страницу, прекращаем пагинацию
+        if (input != "y") {
+            break;
+        }
+
+        // Увеличиваем индексы для перехода на следующую страницу
+        startIndex += itemsPerPage;
+        currentPage++;
     }
 
     string choice;
@@ -231,12 +259,24 @@ void Order::ordersList() {
             price = product["price"].get<std::double_t>();
             break;
         }
+        else {
+            system("cls");
+            cout << "Неверное имя продукта!\n";
+            Sleep(1500);
+            return;
+        }
     }
 
     for (const auto& order : orderData["orders"]) {
         if (order["product_name"] == choice) {
             quantity = order["quantity"].get<std::int16_t>();
             break;
+        }
+        else {
+            system("cls");
+            cout << "Неверное имя продукта!\n";
+            Sleep(1500);
+            return;
         }
     }
 

@@ -411,23 +411,26 @@ void Menu::listDishes() {
                 std::cout << "  - Название: " << ingredient.name << std::endl;
                 std::cout << "    Цена: " << ingredient.price << std::endl;
             }
-
             std::cout << "-----------------------\n";
         }
 
+        bool isLastPage = currentPage == totalPages;
+
         // Проверяем, достигнута ли последняя страница
-        if (currentPage == totalPages) {
+        if (isLastPage) {
+            std::cout << "Это последняя страница. Нет доступных записей для загрузки.\n";
             break;
         }
 
         // Запрашиваем у пользователя загрузку следующей страницы
-        std::cout << "Загрузить еще? (y/n): ";
+        std::cout << "Введите 'y' для загрузки следующей страницы, или любой другой символ для выхода: ";
         std::string input;
         std::cin >> input;
 
         // Если пользователь не желает загружать следующую страницу, прекращаем пагинацию
         if (input != "y") {
-            break;
+            system("cls");
+            return;
         }
 
         // Увеличиваем индексы для перехода на следующую страницу
