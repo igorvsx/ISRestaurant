@@ -10,7 +10,6 @@ public:
     std::string patronymic;
     std::string username;
     std::string password;
-
     // Функции меню для разных ролей
     void guestMenu();
     void skladMenu();
@@ -19,7 +18,6 @@ public:
     void supplierMenu();
     void accountantMenu();
     void oficMenu();
-
 
     void editEmployees();
     void addEmployees();
@@ -30,10 +28,8 @@ public:
     void printBalance(const std::string& filename);
     void printMenuCost();
     void printProductsCost();
-    void makeOrder();
 
     void displayPaidOrdersForCook();
     void startCooking();
-
     void delivering();
 };

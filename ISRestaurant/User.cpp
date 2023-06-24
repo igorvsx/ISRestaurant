@@ -664,11 +664,6 @@ void User::printProductsCost() {
 }
 
 
-
-void User::makeOrder() {
-
-}
-
 void User::guestMenu() {
 
     system("cls");
